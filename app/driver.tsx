@@ -108,13 +108,14 @@ const tabStyles = StyleSheet.create({
 
 // ── Section Header Helper ─────────────────────────────────────────────────────
 function SectionHeader({ icon, title }: { icon: keyof typeof MaterialIcons.glyphMap; title: string }) {
+  const { colors } = useTheme();
   return (
     <View style={sh.row}>
       <View style={sh.iconWrap}>
         <MaterialIcons name={icon} size={11} color={Colors.primary} />
       </View>
-      <Text style={sh.title}>{title.toUpperCase()}</Text>
-      <View style={sh.line} />
+      <Text style={[sh.title, { color: colors.textMuted }]}>{title.toUpperCase()}</Text>
+      <View style={[sh.line, { backgroundColor: colors.borderSubtle }]} />
     </View>
   );
 }
@@ -132,10 +133,11 @@ const sh = StyleSheet.create({
 
 // ── Info Row Component ────────────────────────────────────────────────────────
 function InfoRow({ label, value, last, mono, accent }: { label: string; value: string; last?: boolean; mono?: boolean; accent?: boolean }) {
+  const { colors } = useTheme();
   return (
-    <View style={[infoRowStyles.row, !last && infoRowStyles.border]}>
-      <Text style={infoRowStyles.label}>{label}</Text>
-      <Text style={[infoRowStyles.value, mono && infoRowStyles.mono, accent && { color: Colors.primary }]}>
+    <View style={[infoRowStyles.row, !last && { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]}>
+      <Text style={[infoRowStyles.label, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[infoRowStyles.value, { color: colors.textPrimary }, mono && infoRowStyles.mono, accent && { color: Colors.primary }]}>
         {value}
       </Text>
     </View>
@@ -651,13 +653,13 @@ export default function DriverCompanion() {
                 <StatusBadge status={activeShipment.status} size="sm" />
               </View>
 
-              <View style={styles.routeCard}>
+              <View style={[styles.routeCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={[styles.routeCardRow, isRtl && styles.rowReverse]}>
                   <View style={styles.routeEndpoint}>
                     <View style={[styles.routeEndpointDot, { backgroundColor: Colors.primary }]} />
                     <View style={styles.routeEndpointInfo}>
                       <Text style={styles.routeEndpointLabel}>ORIGIN</Text>
-                      <Text style={styles.routeEndpointCity}>{activeShipment.origin}</Text>
+                      <Text style={[styles.routeEndpointCity, { color: colors.textPrimary }]}>{activeShipment.origin}</Text>
                     </View>
                   </View>
                   <View style={styles.routeArrowWrap}>
@@ -670,7 +672,7 @@ export default function DriverCompanion() {
                     <View style={[styles.routeEndpointDot, { backgroundColor: Colors.success }]} />
                     <View style={[styles.routeEndpointInfo, { alignItems: 'flex-end' }]}>
                       <Text style={styles.routeEndpointLabel}>DESTINATION</Text>
-                      <Text style={styles.routeEndpointCity}>{activeShipment.destination}</Text>
+                      <Text style={[styles.routeEndpointCity, { color: colors.textPrimary }]}>{activeShipment.destination}</Text>
                     </View>
                   </View>
                 </View>
@@ -701,11 +703,11 @@ export default function DriverCompanion() {
                 </View>
               ) : null}
 
-              <View style={styles.gpsCard}>
+              <View style={[styles.gpsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={[styles.gpsCardHeader, isRtl && styles.rowReverse]}>
                   <View style={[styles.gpsCardHeaderLeft, isRtl && styles.rowReverse]}>
                     <View style={[styles.gpsStatusDot, { backgroundColor: gpsTracking ? Colors.success : Colors.border }]} />
-                    <Text style={styles.gpsCardTitle}>Live Location</Text>
+                    <Text style={[styles.gpsCardTitle, { color: colors.textPrimary }]}>Live Location</Text>
                     {gpsTracking && (
                       <View style={[styles.gpsBadge, isRtl && styles.rowReverse]}>
                         <MaterialIcons name={backgroundTracking ? 'phonelink-lock' : 'smartphone'} size={9} color={backgroundTracking ? Colors.success : Colors.warning} />
@@ -790,7 +792,7 @@ export default function DriverCompanion() {
               </View>
 
               <SectionHeader icon="place" title={t('driverApp.checkpoints')} />
-              <View style={styles.checkpointsCard}>
+              <View style={[styles.checkpointsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <CheckpointProgress checkpoints={activeShipment.checkpoints} compact />
               </View>
 
@@ -815,7 +817,7 @@ export default function DriverCompanion() {
               ) : null}
 
               {showUploadOptions && (
-                <View style={styles.uploadCard}>
+                <View style={[styles.uploadCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   {[
                     { source: 'camera' as const, icon: 'camera-alt' as const, label: 'Take Photo', sub: 'Use device camera', color: Colors.primary },
                     { source: 'gallery' as const, icon: 'photo-library' as const, label: 'From Gallery', sub: 'Pick existing photo', color: Colors.success },
@@ -827,8 +829,8 @@ export default function DriverCompanion() {
                           <MaterialIcons name={opt.icon} size={20} color={opt.color} />
                         </View>
                         <View style={{ flex: 1 }}>
-                          <Text style={styles.uploadOptionLabel}>{opt.label}</Text>
-                          <Text style={styles.uploadOptionSub}>{opt.sub}</Text>
+                          <Text style={[styles.uploadOptionLabel, { color: colors.textPrimary }]}>{opt.label}</Text>
+                          <Text style={[styles.uploadOptionSub, { color: colors.textMuted }]}>{opt.sub}</Text>
                         </View>
                         <MaterialIcons name={isRtl ? 'chevron-left' : 'chevron-right'} size={16} color={Colors.textMuted} />
                       </Pressable>
@@ -866,7 +868,7 @@ export default function DriverCompanion() {
               )}
 
               {(activeShipment.priceAccepted || activeShipment.agreedPrice) && (
-                <View style={styles.orderChatCard}>
+                <View style={[styles.orderChatCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   <View style={[styles.orderChatCardHeader, isRtl && styles.rowReverse]}>
                     <View style={styles.orderChatHeaderIcon}><MaterialIcons name="chat" size={11} color={Colors.primary} /></View>
                     <Text style={styles.orderChatHeaderTitle}>ORDER CHAT</Text>
@@ -930,7 +932,7 @@ export default function DriverCompanion() {
       {/* ── CHAT TAB ── */}
       {activeTab === 'chat' && (
         <KeyboardAvoidingView style={styles.chatWrap} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={90}>
-          <View style={[styles.chatInfoBar, isRtl && styles.rowReverse]}>
+          <View style={[styles.chatInfoBar, isRtl && styles.rowReverse, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
             <View style={styles.dispatchAvatar}><MaterialIcons name="headset-mic" size={15} color={Colors.primary} /></View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.chatInfoTitle, isRtl && styles.textRtl]}>{t('driverApp.dispatchCenter')}</Text>
@@ -947,9 +949,9 @@ export default function DriverCompanion() {
               <View style={styles.messages}>{(resolvedThread?.messages ?? []).map(msg => renderMessageBubble(msg))}</View>
             )}
           </ScrollView>
-          <View style={[styles.inputBar, isRtl && styles.rowReverse]}>
+          <View style={[styles.inputBar, isRtl && styles.rowReverse, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
             <TextInput
-              style={styles.chatInput}
+              style={[styles.chatInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.textPrimary }]}
               value={message}
               onChangeText={setMessage}
               placeholder={t('driverApp.messagePlaceholder')}
@@ -969,7 +971,7 @@ export default function DriverCompanion() {
       {/* ── NOTIFICATIONS TAB ── */}
       {activeTab === 'notifications' && (
         <View style={{ flex: 1 }}>
-          <View style={[styles.subHeader, isRtl && styles.rowReverse]}>
+          <View style={[styles.subHeader, isRtl && styles.rowReverse, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
             <Text style={styles.subHeaderTitle}>{t('driverApp.notifCenter')}</Text>
             <View style={[styles.subHeaderActions, isRtl && styles.rowReverse]}>
               {unreadCount > 0 && (
@@ -1001,7 +1003,7 @@ export default function DriverCompanion() {
                   return (
                     <Pressable
                       key={notif.id}
-                      style={[styles.notifItem, isRtl && styles.rowReverse, !notif.read && styles.notifItemUnread]}
+                      style={[styles.notifItem, isRtl && styles.rowReverse, { backgroundColor: colors.card, borderColor: colors.border }, !notif.read && styles.notifItemUnread]}
                       onPress={() => setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n))}
                     >
                       <View style={[styles.notifItemIcon, { backgroundColor: `${cols[notif.type]}15`, borderColor: `${cols[notif.type]}30` }]}>
@@ -1009,7 +1011,7 @@ export default function DriverCompanion() {
                       </View>
                       <View style={{ flex: 1, gap: 2 }}>
                         <View style={[styles.notifItemTitleRow, isRtl && styles.rowReverse]}>
-                          <Text style={styles.notifItemTitle}>{notif.title}</Text>
+                          <Text style={[styles.notifItemTitle, { color: colors.textPrimary }]}>{notif.title}</Text>
                           {!notif.read && <View style={styles.unreadDot} />}
                         </View>
                         <Text style={[styles.notifItemBody, isRtl && styles.textRtl]} numberOfLines={2}>{notif.body}</Text>
@@ -1033,7 +1035,7 @@ export default function DriverCompanion() {
           ) : (
             <View style={styles.section}>
 
-              <View style={styles.profileHero}>
+              <View style={[styles.profileHero, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={styles.profileHeroAccent} />
                 <View style={styles.profileHeroContent}>
                   <View style={styles.profileAvatarWrap}>
@@ -1042,8 +1044,8 @@ export default function DriverCompanion() {
                     </View>
                     <View style={[styles.profileAvailDot, { backgroundColor: availColor, borderColor: Colors.surface }]} />
                   </View>
-                  <Text style={styles.profileName}>{driverProfile?.fullName ?? user?.displayName ?? ''}</Text>
-                  <Text style={styles.profileEmail}>{user?.email ?? ''}</Text>
+                  <Text style={[styles.profileName, { color: colors.textPrimary }]}>{driverProfile?.fullName ?? user?.displayName ?? ''}</Text>
+                  <Text style={[styles.profileEmail, { color: colors.textMuted }]}>{user?.email ?? ''}</Text>
                   <View style={[styles.profileRolePill, isRtl && styles.rowReverse]}>
                     <MaterialIcons name="local-shipping" size={11} color={Colors.primary} />
                     <Text style={styles.profileRoleText}>MARAS Driver</Text>
@@ -1057,7 +1059,7 @@ export default function DriverCompanion() {
                       <React.Fragment key={stat.label}>
                         <View style={styles.profileStat}>
                           <Text style={[styles.profileStatVal, { color: stat.color }]}>{stat.value}</Text>
-                          <Text style={styles.profileStatLabel}>{stat.label}</Text>
+                          <Text style={[styles.profileStatLabel, { color: colors.textMuted }]}>{stat.label}</Text>
                         </View>
                         {statIdx < arr.length - 1 && <View style={styles.profileStatDiv} />}
                       </React.Fragment>
@@ -1090,7 +1092,7 @@ export default function DriverCompanion() {
               </View>
 
               <SectionHeader icon="local-shipping" title={t('driverApp.plateNumber') + ' & ' + t('driverApp.truckClass')} />
-              <View style={styles.infoCard}>
+              <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <InfoRow label={t('driverApp.plateNumber')} value={driverProfile?.plateNumber ?? '—'} mono accent />
                 <InfoRow label={t('driverApp.truckClass')} value={driverProfile?.truckClass ?? '—'} last />
               </View>
@@ -1113,19 +1115,19 @@ export default function DriverCompanion() {
               ) : null}
 
               {editMode ? (
-                <View style={styles.editCard}>
+                <View style={[styles.editCard, { backgroundColor: colors.card }]}>
                   {[
                     { label: t('driverApp.fullName'),    value: editName,     setter: setEditName,     icon: 'person' as const,          keyboard: 'default' as const,    autoCapitalize: 'words' as const },
                     { label: t('driverApp.phone'), value: editPhone,    setter: setEditPhone,    icon: 'phone' as const,           keyboard: 'phone-pad' as const,  autoCapitalize: 'none' as const },
                     { label: t('driverApp.username'),     value: editUsername, setter: setEditUsername, icon: 'alternate-email' as const,  keyboard: 'default' as const,    autoCapitalize: 'none' as const },
                     { label: t('driverApp.plateNumber'), value: editPlate,    setter: setEditPlate,    icon: 'directions-car' as const,  keyboard: 'default' as const,    autoCapitalize: 'characters' as const },
                   ].map((field) => (
-                    <View key={field.label} style={[styles.editField, { borderBottomWidth: 1, borderBottomColor: Colors.borderSubtle }]}>
+                    <View key={field.label} style={[styles.editField, { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]}>
                       <Text style={[styles.editFieldLabel, isRtl && styles.textRtl]}>{field.label}</Text>
-                      <View style={[styles.editFieldRow, isRtl && styles.rowReverse]}>
+                      <View style={[styles.editFieldRow, isRtl && styles.rowReverse, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                         <MaterialIcons name={field.icon} size={14} color={Colors.textMuted} />
                         <TextInput
-                          style={styles.editInput}
+                          style={[styles.editInput, { color: colors.textPrimary }]}
                           value={field.value}
                           onChangeText={field.setter}
                           keyboardType={field.keyboard}
@@ -1175,7 +1177,7 @@ export default function DriverCompanion() {
                   </View>
                 </View>
               ) : (
-                <View style={styles.infoCard}>
+                <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   <InfoRow label={t('driverApp.fullName')} value={driverProfile?.fullName ?? user?.displayName ?? '—'} />
                   <InfoRow label={t('driverApp.phone')} value={driverProfile?.phone || '—'} />
                   <InfoRow label={t('driverApp.username')} value={driverProfile?.username || '—'} last />
@@ -1194,10 +1196,10 @@ export default function DriverCompanion() {
               </View>
 
               {showChangePassword && (
-                <View style={styles.editCard}>
-                  <View style={[styles.editField, { borderBottomWidth: 1, borderBottomColor: Colors.borderSubtle }]}>
+                <View style={[styles.editCard, { backgroundColor: colors.card }]}>
+                  <View style={[styles.editField, { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]}>
                     <Text style={[styles.editFieldLabel, isRtl && styles.textRtl]}>New Password</Text>
-                    <View style={[styles.editFieldRow, isRtl && styles.rowReverse]}>
+                    <View style={[styles.editFieldRow, isRtl && styles.rowReverse, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                       <MaterialIcons name="lock-outline" size={14} color={Colors.textMuted} />
                       <TextInput
                         style={[styles.editInput, { flex: 1 }]}
@@ -1216,7 +1218,7 @@ export default function DriverCompanion() {
                   </View>
                   <View style={[styles.editField, { borderBottomWidth: 0 }]}>
                     <Text style={[styles.editFieldLabel, isRtl && styles.textRtl]}>Confirm Password</Text>
-                    <View style={[styles.editFieldRow, isRtl && styles.rowReverse]}>
+                    <View style={[styles.editFieldRow, isRtl && styles.rowReverse, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                       <MaterialIcons name="lock-outline" size={14} color={Colors.textMuted} />
                       <TextInput
                         style={[styles.editInput, { flex: 1 }]}
@@ -1275,13 +1277,13 @@ export default function DriverCompanion() {
               )}
 
               <SectionHeader icon="settings" title={t('driverApp.appSettings')} />
-              <View style={styles.infoCard}>
-                <View style={[styles.settingsRow, isRtl && styles.rowReverse, { borderBottomWidth: 1, borderBottomColor: Colors.borderSubtle }]}>
-                  <Text style={styles.settingsRowLabel}>{t('driverApp.language')}</Text>
+              <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <View style={[styles.settingsRow, isRtl && styles.rowReverse, { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]}>
+                  <Text style={[styles.settingsRowLabel, { color: colors.textSecondary }]}>{t('driverApp.language')}</Text>
                   <LanguagePicker compact />
                 </View>
                 <View style={[styles.settingsRow, isRtl && styles.rowReverse]}>
-                  <Text style={styles.settingsRowLabel}>{t('driverApp.appVersion')}</Text>
+                  <Text style={[styles.settingsRowLabel, { color: colors.textSecondary }]}>{t('driverApp.appVersion')}</Text>
                   <Text style={styles.settingsRowValue}>
                     {(() => { try { const C = require('expo-constants').default; return `v${C.expoConfig?.version ?? '1.0.0'}`; } catch { return 'v1.0.0'; } })()}
                   </Text>
@@ -1318,11 +1320,11 @@ export default function DriverCompanion() {
             </View>
 
             {activeShipment ? (
-              <View style={styles.reportShipmentCard}>
+              <View style={[styles.reportShipmentCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={[styles.reportShipmentTop, isRtl && styles.rowReverse]}>
                   <View style={{ flex: 1, gap: 4 }}>
                     <Text style={styles.reportTirNumber}>{activeShipment.tirNumber}</Text>
-                    <Text style={[styles.reportCargoDesc, isRtl && styles.textRtl]} numberOfLines={1}>{activeShipment.cargoDescription}</Text>
+                    <Text style={[styles.reportCargoDesc, isRtl && styles.textRtl, { color: colors.textPrimary }]} numberOfLines={1}>{activeShipment.cargoDescription}</Text>
                   </View>
                   <StatusBadge status={activeShipment.status} size="sm" />
                 </View>
@@ -1342,7 +1344,7 @@ export default function DriverCompanion() {
             )}
 
             <SectionHeader icon="swap-horiz" title={t('driverApp.statusUpdate')} />
-            <View style={styles.statusList}>
+            <View style={[styles.statusList, { backgroundColor: colors.card, borderColor: colors.border }]}>
               {DRIVER_STATUS_OPTIONS.map((opt, statusIdx) => {
                 const isSelected = selectedStatus === opt.value;
                 const isCurrent = activeShipment?.status === opt.value;
@@ -1352,7 +1354,7 @@ export default function DriverCompanion() {
                     style={({ pressed }) => [
                       styles.statusItem,
                       isRtl && styles.rowReverse,
-                      statusIdx < DRIVER_STATUS_OPTIONS.length - 1 && styles.statusItemBorder,
+                      statusIdx < DRIVER_STATUS_OPTIONS.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle },
                       isSelected && { backgroundColor: `${opt.color}10` },
                       pressed && !isSelected && { backgroundColor: Colors.cardHover },
                     ]}
@@ -1366,7 +1368,7 @@ export default function DriverCompanion() {
 
                     <View style={styles.statusItemBody}>
                       <View style={[styles.statusItemLabelRow, isRtl && styles.rowReverse]}>
-                        <Text style={[styles.statusItemLabel, isSelected && { color: opt.color, fontWeight: '700' }]}>
+                        <Text style={[styles.statusItemLabel, { color: colors.textPrimary }, isSelected && { color: opt.color, fontWeight: '700' }]}>
                           {opt.label}
                         </Text>
                         {isCurrent && !isSelected && (
@@ -1375,7 +1377,7 @@ export default function DriverCompanion() {
                           </View>
                         )}
                       </View>
-                      <Text style={[styles.statusItemSub, isRtl && styles.textRtl]}>{opt.sublabel}</Text>
+                      <Text style={[styles.statusItemSub, isRtl && styles.textRtl, { color: colors.textMuted }]}>{opt.sublabel}</Text>
                     </View>
 
                     <View style={[styles.radioCircle, isSelected && { backgroundColor: opt.color, borderColor: opt.color }]}>
@@ -1386,13 +1388,13 @@ export default function DriverCompanion() {
               })}
             </View>
 
-            <View style={styles.remarksCard}>
+            <View style={[styles.remarksCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={[styles.remarksCardHeader, isRtl && styles.rowReverse]}>
                 <MaterialIcons name="comment" size={12} color={Colors.textMuted} />
                 <Text style={styles.remarksCardLabel}>REMARKS (Optional)</Text>
               </View>
               <TextInput
-                style={styles.remarksInput}
+                style={[styles.remarksInput, { color: colors.textPrimary }]}
                 value={statusRemark}
                 onChangeText={setStatusRemark}
                 placeholder="Add context or remarks for this status update..."

@@ -340,6 +340,7 @@ const pbSt = StyleSheet.create({
 
 // ── Shipment Card ────────────────────────────────────────────────────────────
 function ShipmentCard({ shipment, onPress }: { shipment: Shipment; onPress: () => void }) {
+  const { colors } = useTheme();
   const typeIcon: keyof typeof MaterialIcons.glyphMap =
     shipment.shipmentType === 'Air' ? 'flight' : shipment.shipmentType === 'Sea' ? 'directions-boat' : 'local-shipping';
   const typeColor = shipment.shipmentType === 'Air' ? Colors.info : shipment.shipmentType === 'Sea' ? SHIPMENT_TYPE_COLORS.Sea : Colors.primary;
@@ -347,7 +348,7 @@ function ShipmentCard({ shipment, onPress }: { shipment: Shipment; onPress: () =
 
   return (
     <Pressable
-      style={({ pressed }) => [scSt.card, pressed && { opacity: 0.92 }]}
+      style={({ pressed }) => [scSt.card, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.92 }]}
       onPress={onPress}
     >
       <View style={[scSt.accentBar, { backgroundColor: isDetained ? Colors.danger : typeColor }]} />
@@ -357,8 +358,8 @@ function ShipmentCard({ shipment, onPress }: { shipment: Shipment; onPress: () =
             <MaterialIcons name={typeIcon} size={14} color={typeColor} />
           </View>
           <View style={scSt.headerMid}>
-            <Text style={scSt.tirNumber}>{shipment.tirNumber}</Text>
-            <Text style={scSt.typeBadge}>{shipment.shipmentType ?? 'Road'}</Text>
+            <Text style={[scSt.tirNumber, { color: colors.textPrimary }]}>{shipment.tirNumber}</Text>
+            <Text style={[scSt.typeBadge, { color: colors.textMuted }]}>{shipment.shipmentType ?? 'Road'}</Text>
           </View>
           <StatusBadge status={shipment.status} size="sm" />
         </View>
@@ -434,8 +435,9 @@ const scSt = StyleSheet.create({
 function StatCard({ icon, value, label, color, sublabel }: {
   icon: keyof typeof MaterialIcons.glyphMap; value: number; label: string; color: string; sublabel?: string;
 }) {
+  const { colors } = useTheme();
   return (
-    <View style={[statSt.card, { borderTopColor: color }]}>
+    <View style={[statSt.card, { backgroundColor: colors.card, borderColor: colors.border, borderTopColor: color }]}>
       <View style={[statSt.iconWrap, { backgroundColor: `${color}15` }]}>
         <MaterialIcons name={icon} size={16} color={color} />
       </View>
@@ -460,13 +462,14 @@ const statSt = StyleSheet.create({
 
 // ── Journey Progress in Detail Modal ─────────────────────────────────────────
 function JourneyTimeline({ shipment }: { shipment: Shipment }) {
+  const { colors } = useTheme();
   const journey = getJourney(shipment.shipmentType ?? 'Road');
   const currentIdx = journey.indexOf(shipment.status);
   const isDetained = shipment.status === 'Detained';
   if (isDetained) return null;
 
   return (
-    <View style={jtSt.wrap}>
+    <View style={[jtSt.wrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={jtSt.scroll}>
         {journey.map((step, i) => {
           const isDone = currentIdx >= 0 ? i <= currentIdx : false;
@@ -512,6 +515,7 @@ const jtSt = StyleSheet.create({
 // ── Detail Modal ─────────────────────────────────────────────────────────────
 function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onClose: () => void; t: (k: any) => string }) {
   const meta = STATUS_META[shipment.status];
+  const { colors } = useTheme();
   const typeIcon: keyof typeof MaterialIcons.glyphMap =
     shipment.shipmentType === 'Air' ? 'flight' : shipment.shipmentType === 'Sea' ? 'directions-boat' : 'local-shipping';
   const typeColor = shipment.shipmentType === 'Air' ? Colors.info : shipment.shipmentType === 'Sea' ? SHIPMENT_TYPE_COLORS.Sea : Colors.primary;
@@ -520,17 +524,17 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
   const isRtl = I18nManager.getConstants().isRTL;
 
   const renderInfoRow = (label: string, value: string, last?: boolean, mono?: boolean) => (
-    <View style={[detSt.row, !last && detSt.rowBorder]} key={label}>
-      <Text style={detSt.rowLabel}>{label}</Text>
-      <Text style={[detSt.rowValue, mono && detSt.rowMono]}>{value || '—'}</Text>
+    <View style={[detSt.row, !last && { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]} key={label}>
+      <Text style={[detSt.rowLabel, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[detSt.rowValue, { color: colors.textPrimary }, mono && detSt.rowMono]}>{value || '—'}</Text>
     </View>
   );
 
   return (
     <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={detSt.root}>
+      <View style={[detSt.root, { backgroundColor: colors.bg }]}>
         {/* Header */}
-        <View style={[detSt.header, isDetained && { borderBottomColor: `${Colors.danger}40` }]}>
+        <View style={[detSt.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isDetained && { borderBottomColor: `${Colors.danger}40` }]}>
           {isDetained && <View style={detSt.detainedBar} />}
           <View style={detSt.headerLeft}>
             <View style={[detSt.typeIconWrap, { backgroundColor: `${isDetained ? Colors.danger : typeColor}18`, borderColor: `${isDetained ? Colors.danger : typeColor}35` }]}>
@@ -554,12 +558,12 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Route Banner */}
-          <View style={[detSt.routeBanner, isRtl && { flexDirection: 'row-reverse' }]}>
+          <View style={[detSt.routeBanner, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && { flexDirection: 'row-reverse' }]}>
             <View style={[detSt.routeEndpoint, isRtl && { flexDirection: 'row-reverse' }]}>
               <View style={[detSt.routeDot, { backgroundColor: Colors.primary }]} />
               <View style={{ flex: 1 }}>
                 <Text style={detSt.routeEndpointLabel}>{t('customer.originLabel')}</Text>
-                <Text style={detSt.routeEndpointCity} numberOfLines={2}>{shipment.origin}</Text>
+                <Text style={[detSt.routeEndpointCity, { color: colors.textPrimary }]} numberOfLines={2}>{shipment.origin}</Text>
               </View>
             </View>
             <View style={detSt.routeCenter}>
@@ -573,7 +577,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
               <View style={[detSt.routeDot, { backgroundColor: Colors.success }]} />
               <View style={{ flex: 1, alignItems: isRtl ? 'flex-start' : 'flex-end' }}>
                 <Text style={detSt.routeEndpointLabel}>{t('customer.destinationLabel')}</Text>
-                <Text style={[detSt.routeEndpointCity, { textAlign: isRtl ? 'left' : 'right' }]} numberOfLines={2}>{shipment.destination}</Text>
+                <Text style={[detSt.routeEndpointCity, { textAlign: isRtl ? 'left' : 'right', color: colors.textPrimary }]} numberOfLines={2}>{shipment.destination}</Text>
               </View>
             </View>
           </View>
@@ -584,7 +588,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
               <View style={detSt.sectionIconWrap}><MaterialIcons name="timeline" size={11} color={Colors.primary} /></View>
               <Text style={detSt.sectionTitle}>{t('customer.currentStatusTitle')}</Text>
             </View>
-            <View style={[detSt.statusCard, { borderColor: `${meta.color}35`, borderLeftWidth: 3, borderLeftColor: meta.color }]}>
+            <View style={[detSt.statusCard, { backgroundColor: colors.card, borderColor: colors.border, borderLeftWidth: 3, borderLeftColor: meta.color }]}>
               <View style={[detSt.statusCardIcon, { backgroundColor: `${meta.color}18`, borderColor: `${meta.color}35` }]}>
                 <MaterialIcons name={meta.icon} size={22} color={meta.color} />
               </View>
@@ -635,7 +639,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
               <View style={detSt.sectionIconWrap}><MaterialIcons name="inventory" size={11} color={Colors.primary} /></View>
               <Text style={detSt.sectionTitle}>{t('customer.cargoTitle')}</Text>
             </View>
-            <View style={detSt.infoCard}>
+            <View style={[detSt.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               {renderInfoRow(t('customer.cargoDesc'), shipment.cargoDescription)}
               {renderInfoRow(t('customer.weight'), shipment.weight)}
               {renderInfoRow(t('customer.cargoValue'), shipment.cargoValue)}
@@ -652,7 +656,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
                 <View style={[detSt.sectionIconWrap, { backgroundColor: `${Colors.info}15`, borderColor: `${Colors.info}30` }]}><MaterialIcons name="flight" size={11} color={Colors.info} /></View>
                 <Text style={detSt.sectionTitle}>{t('customer.flightTitle')}</Text>
               </View>
-              <View style={detSt.infoCard}>
+              <View style={[detSt.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 {shipment.airlineCarrier ? renderInfoRow(t('customer.airline'), shipment.airlineCarrier) : null}
                 {shipment.flightNumber ? renderInfoRow(t('customer.flightNo'), shipment.flightNumber, false, true) : null}
                 {shipment.mawbNumber ? renderInfoRow(t('customer.mawb'), shipment.mawbNumber, false, true) : null}
@@ -670,7 +674,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
                 <View style={[detSt.sectionIconWrap, { backgroundColor: '#58C4DC15', borderColor: '#58C4DC30' }]}><MaterialIcons name="directions-boat" size={11} color="#58C4DC" /></View>
                 <Text style={detSt.sectionTitle}>{t('customer.vesselTitle')}</Text>
               </View>
-              <View style={detSt.infoCard}>
+              <View style={[detSt.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 {shipment.vesselName ? renderInfoRow(t('customer.vessel'), shipment.vesselName) : null}
                 {shipment.voyageNumber ? renderInfoRow(t('customer.voyageNo'), shipment.voyageNumber, false, true) : null}
                 {shipment.bolNumber ? renderInfoRow(t('customer.bol'), shipment.bolNumber, false, true) : null}
@@ -689,7 +693,7 @@ function ShipmentDetailModal({ shipment, onClose, t }: { shipment: Shipment; onC
                 <View style={detSt.sectionIconWrap}><MaterialIcons name="place" size={11} color={Colors.primary} /></View>
                 <Text style={detSt.sectionTitle}>{t('customer.checkpointsTitle')}</Text>
               </View>
-              <View style={detSt.checkpointsCard}>
+              <View style={[detSt.checkpointsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <CheckpointProgress checkpoints={shipment.checkpoints} compact />
               </View>
             </View>
