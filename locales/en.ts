@@ -468,6 +468,15 @@ const en = {
     errorNoMatch: 'Passwords do not match.',
   },
 
+  // 404 Not Found
+  notFound: {
+    title: 'Page Not Found',
+    subtitle: '404',
+    message: 'The route you requested does not exist or has been moved.',
+    goBack: 'Go Back',
+    goHome: 'Go to Dashboard',
+  },
+
   // Common
   common: {
     close: 'Close',

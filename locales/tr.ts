@@ -440,6 +440,14 @@ const tr = {
     errorNoMatch: 'Şifreler eşleşmiyor.',
   },
 
+  notFound: {
+    title: 'Sayfa Bulunamadı',
+    subtitle: '404',
+    message: 'İstediğiniz rota mevcut değil veya taşınmış.',
+    goBack: 'Geri Git',
+    goHome: 'Gösterge Paneline Git',
+  },
+
   common: {
     close: 'Kapat',
     save: 'Kaydet',
