@@ -1338,12 +1338,12 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
 
           {/* ── Tab bar ─────────────────────────────────────────────── */}
           <View style={styles.tabBar}>
-            <TabBtn id="operations" icon="edit-note"    label="Operations"    active={activeTab === 'operations'} onPress={() => setActiveTab('operations')} />
-            <TabBtn id="broadcast"  icon="campaign"     label="Broadcast"     active={activeTab === 'broadcast'}  onPress={() => setActiveTab('broadcast')} />
-            <TabBtn id="fleet"      icon="people"       label="Fleet Monitor" active={activeTab === 'fleet'}      onPress={() => setActiveTab('fleet')} />
-            <TabBtn id="approvals"  icon="how-to-reg"   label="Approvals"     active={activeTab === 'approvals'}  badge={pendingDriverCount || undefined} onPress={() => setActiveTab('approvals')} />
-            <TabBtn id="alerts"     icon="warning"      label="Alerts"        active={activeTab === 'alerts'}     badge={alertShipments.length || undefined} onPress={() => setActiveTab('alerts')} />
-            <TabBtn id="config"     icon="settings"     label="App Config"    active={activeTab === 'config'}     onPress={() => setActiveTab('config')} />
+            <TabBtn icon="edit-note"    label="Operations"    active={activeTab === 'operations'} onPress={() => setActiveTab('operations')} />
+            <TabBtn icon="campaign"     label="Broadcast"     active={activeTab === 'broadcast'}  onPress={() => setActiveTab('broadcast')} />
+            <TabBtn icon="people"       label="Fleet Monitor" active={activeTab === 'fleet'}      onPress={() => setActiveTab('fleet')} />
+            <TabBtn icon="how-to-reg"   label="Approvals"     active={activeTab === 'approvals'}  badge={pendingDriverCount || undefined} onPress={() => setActiveTab('approvals')} />
+            <TabBtn icon="warning"      label="Alerts"        active={activeTab === 'alerts'}     badge={alertShipments.length || undefined} onPress={() => setActiveTab('alerts')} />
+            <TabBtn icon="settings"     label="App Config"    active={activeTab === 'config'}     onPress={() => setActiveTab('config')} />
           </View>
 
           {/* ── Content ─────────────────────────────────────────────── */}

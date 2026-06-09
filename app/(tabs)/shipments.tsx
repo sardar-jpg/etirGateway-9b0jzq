@@ -29,7 +29,7 @@ import { Shipment, ShipmentStatus } from '@/types';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
 
 // ── Shimmer skeleton ──────────────────────────────────────────────────────────
-function SkeletonBox({ w, h, radius = 6, style }: { w?: number | string; h: number; radius?: number; style?: any }) {
+function SkeletonBox({ w, h, radius = 6, style }: { w?: number | string; h: number; radius?: number; style?: object }) {
   const shimmer = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -644,17 +644,17 @@ export default function ShipmentsScreen() {
                   <Detail
                     shipment={selectedShipment}
                     onClose={() => setSelectedShipment(null)}
-                    onStatusChange={async (id: string, status: any) => {
+                    onStatusChange={async (id: string, status: ShipmentStatus) => {
                       await updateStatus(id, status);
-                      setSelectedShipment((prev: any) => prev ? { ...prev, status } : prev);
+                      setSelectedShipment(prev => prev ? { ...prev, status } : prev);
                     }}
                     onDriverAssign={async (id: string, driverId: string | null, driverName: string, plateNumber: string) => {
                       await assignDriver(id, driverId, driverName, plateNumber);
-                      setSelectedShipment((prev: any) => prev ? { ...prev, driverId: driverId ?? '', driverName, plateNumber } : prev);
+                      setSelectedShipment(prev => prev ? { ...prev, driverId: driverId ?? '', driverName, plateNumber } : prev);
                     }}
                     onETAChange={async (id: string, estimatedArrival: string) => {
                       await updateETA(id, estimatedArrival);
-                      setSelectedShipment((prev: any) => prev ? { ...prev, estimatedArrival } : prev);
+                      setSelectedShipment(prev => prev ? { ...prev, estimatedArrival } : prev);
                     }}
                   />
                 );
