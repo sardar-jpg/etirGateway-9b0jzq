@@ -272,7 +272,6 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
   );
 
   const STATUS_OPTIONS = getStatusOptions(shipment.shipmentType);
-  void STATUS_OPTIONS.find(o => o.value === localStatus); // currentOption — used in status picker label
 
   const handleEmailCustomer = () => {
     const trackingUrl = typeof window !== 'undefined'

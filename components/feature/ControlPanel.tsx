@@ -1157,8 +1157,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
       .from('driver_profiles')
       .select('id', { count: 'exact', head: true })
       .eq('approval_status', 'pending')
-      .then(({ count }) => setPendingDriverCount(count ?? 0))
-      .catch(() => {});
+      .then(({ count }) => setPendingDriverCount(count ?? 0));
   }, [visible]);
 
   // ── Operations tab state ───────────────────────────────────────────────────
