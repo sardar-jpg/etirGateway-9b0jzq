@@ -24,8 +24,8 @@ export function DriversProvider({ children }: { children: ReactNode }) {
     try {
       const { drivers: data } = await fetchAllDrivers();
       if (!controller.signal.aborted) setDrivers(data);
-    } catch (e: any) {
-      if (e?.name !== 'AbortError') console.warn('[DriversContext] load error:', e);
+    } catch (e) {
+      if ((e as any)?.name !== 'AbortError') console.warn('[DriversContext] load error:', e);
       else console.warn('[DriversContext] initial load timed out after 10s');
     } finally {
       clearTimeout(timer);
@@ -44,8 +44,8 @@ export function DriversProvider({ children }: { children: ReactNode }) {
       try {
         const { drivers: data } = await fetchAllDrivers();
         if (!controller.signal.aborted) setDrivers(data);
-      } catch (e: any) {
-        if (e?.name !== 'AbortError') console.warn('[DriversContext] poll error:', e);
+      } catch (e) {
+        if ((e as any)?.name !== 'AbortError') console.warn('[DriversContext] poll error:', e);
         else console.warn('[DriversContext] poll timed out after 10s — skipping update');
       } finally {
         clearTimeout(timer);

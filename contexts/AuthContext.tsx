@@ -68,9 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let session;
         try {
           session = await getSession();
-        } catch (sessionErr: any) {
+        } catch (sessionErr) {
           // Stale / invalid refresh token stored in localStorage — clear it silently
-          const msg = sessionErr?.message ?? '';
+          const msg = (sessionErr as any)?.message ?? '';
           if (msg.includes('Refresh Token') || msg.includes('Invalid') || msg.includes('expired')) {
             await supabase.auth.signOut();
           }
@@ -323,7 +323,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setIsLoading(false);
       return { success: true };
-    } catch (e: unknown) {
+    } catch {
       setIsLoading(false);
       return { success: false, error: 'An unexpected error occurred. Please try again.' };
     }
@@ -390,7 +390,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Auth state change listener will handle hydration
       setIsLoading(false);
       return { success: true };
-    } catch (e: unknown) {
+    } catch {
       setIsLoading(false);
       return { success: false, error: 'Google sign-in failed. Please try again.' };
     }

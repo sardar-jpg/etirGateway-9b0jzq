@@ -85,8 +85,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           prevUnreadRef.current = Object.fromEntries(data.map(t => [t.id, t.unreadCount]));
         }
       }
-    } catch (e: any) {
-      if (e?.name !== 'AbortError') console.warn('[ChatContext] load error:', e);
+    } catch (e) {
+      if ((e as any)?.name !== 'AbortError') console.warn('[ChatContext] load error:', e);
       else console.warn('[ChatContext] initial load timed out after 10s');
     } finally {
       clearTimeout(timer);
@@ -151,10 +151,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         const result = await fetchAllThreads();
         if (controller.signal.aborted) return;
         freshThreads = result.threads;
-      } catch (e: any) {
+      } catch (e) {
         clearTimeout(timer);
         pollAbortRef.current = null;
-        if (e?.name !== 'AbortError') console.warn('[ChatContext] poll error:', e);
+        if ((e as any)?.name !== 'AbortError') console.warn('[ChatContext] poll error:', e);
         else console.warn('[ChatContext] poll timed out after 10s — skipping update');
         return;
       } finally {

@@ -60,8 +60,8 @@ export function ShipmentsProvider({ children }: { children: ReactNode }) {
       } else {
         setShipments(data);
       }
-    } catch (e: any) {
-      const msg = e?.name === 'AbortError' ? 'Request timed out after 10s' : String(e);
+    } catch (e) {
+      const msg = (e as any)?.name === 'AbortError' ? 'Request timed out after 10s' : String(e);
       console.warn('[ShipmentsContext] load error:', msg);
       setError('Failed to load shipments. Please retry.');
     } finally {
@@ -100,8 +100,8 @@ export function ShipmentsProvider({ children }: { children: ReactNode }) {
             setPollError('Connection lost — retrying...');
           }
         }
-      } catch (e: any) {
-        if (e?.name !== 'AbortError') {
+      } catch (e) {
+        if ((e as any)?.name !== 'AbortError') {
           console.warn('[ShipmentsContext] poll threw:', e);
           if (!controller.signal.aborted) setPollError('Connection lost — retrying...');
         } else {
