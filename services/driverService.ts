@@ -1,6 +1,18 @@
 import { supabase } from './supabaseClient';
 import { Driver, TruckClass } from '@/types';
 
+export interface PendingDriver {
+  id: string;
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+  plateNumber: string;
+  truckClass: TruckClass;
+  avatarInitials: string;
+  createdAt: string;
+}
+
 interface RawDriverProfile {
   id: string;
   full_name: string;
@@ -63,6 +75,47 @@ export async function fetchDriver(id: string): Promise<{ driver: Driver | null; 
   if (!dpRes.data) return { driver: null, error: null }; // no profile row yet
   const raw = { ...dpRes.data as RawDriverProfile, user_profiles: upRes.data ? { email: (upRes.data as { id: string; email: string }).email } : null };
   return { driver: mapDriver(raw), error: null };
+}
+
+/** Fetch only pending-approval drivers (admin view) */
+export async function fetchPendingDrivers(): Promise<{ drivers: PendingDriver[]; error: string | null }> {
+  const [dpRes, upRes] = await Promise.all([
+    supabase.from('driver_profiles').select('*').eq('approval_status', 'pending').order('created_at', { ascending: false }),
+    supabase.from('user_profiles').select('id, email'),
+  ]);
+  if (dpRes.error) return { drivers: [], error: dpRes.error.message };
+  const emailMap: Record<string, string> = {};
+  (upRes.data ?? []).forEach((up: { id: string; email: string }) => { emailMap[up.id] = up.email; });
+  const pending: PendingDriver[] = (dpRes.data as RawDriverProfile[]).map(d => ({
+    id: d.id,
+    fullName: d.full_name,
+    username: d.username ?? '',
+    email: emailMap[d.id] ?? '',
+    phone: d.phone ?? '',
+    plateNumber: d.plate_number,
+    truckClass: d.truck_class as TruckClass,
+    avatarInitials: d.avatar_initials ?? d.full_name.substring(0, 2).toUpperCase(),
+    createdAt: (d as any).created_at ?? '',
+  }));
+  return { drivers: pending, error: null };
+}
+
+/** Approve a driver registration */
+export async function approveDriver(id: string): Promise<string | null> {
+  const { error } = await supabase
+    .from('driver_profiles')
+    .update({ approval_status: 'approved', updated_at: new Date().toISOString() })
+    .eq('id', id);
+  return error?.message ?? null;
+}
+
+/** Reject a driver registration */
+export async function rejectDriver(id: string): Promise<string | null> {
+  const { error } = await supabase
+    .from('driver_profiles')
+    .update({ approval_status: 'rejected', updated_at: new Date().toISOString() })
+    .eq('id', id);
+  return error?.message ?? null;
 }
 
 /** Update driver online status */

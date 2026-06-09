@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Pressable, Dimensions, Animated,
+  View, Text, StyleSheet, ScrollView, Pressable, Dimensions, Animated, ActivityIndicator,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useDrivers } from '@/hooks/useDrivers';
+import { useAlert } from '@/template';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { useRouter } from 'expo-router';
@@ -35,6 +36,73 @@ function DriverSkeleton() {
     return () => loop.stop();
   }, []);
   const bg = shimmer.interpolate({ inputRange: [0, 1], outputRange: [Colors.surface, Colors.card] });
+
+const pendingSt = StyleSheet.create({
+  section: {
+    marginHorizontal: Spacing.xl, marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg, overflow: 'hidden',
+    borderWidth: 1.5, borderColor: `${Colors.warning}50`,
+  },
+  headerRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    backgroundColor: Colors.warningBg,
+    borderBottomWidth: 1, borderBottomColor: `${Colors.warning}30`,
+    flexWrap: 'wrap', gap: Spacing.xs,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  iconWrap: {
+    width: 24, height: 24, borderRadius: 7,
+    backgroundColor: `${Colors.warning}20`, borderWidth: 1, borderColor: `${Colors.warning}40`,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitle: { fontSize: 10, fontWeight: '800', color: Colors.warning, letterSpacing: 0.9 },
+  badge: {
+    backgroundColor: Colors.warning, borderRadius: 10,
+    minWidth: 18, height: 18, paddingHorizontal: 5,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  badgeText: { fontSize: 9, fontWeight: '800', color: Colors.bg },
+  headerSub: { fontSize: FontSize.xs, color: Colors.warning, opacity: 0.75, marginLeft: 4 },
+  card: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+  },
+  accentBar: { width: 3, backgroundColor: Colors.warning, alignSelf: 'stretch' },
+  cardInner: { flex: 1, padding: Spacing.lg, gap: Spacing.md },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md },
+  avatar: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: `${Colors.warning}15`, borderWidth: 2, borderColor: `${Colors.warning}50`,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  avatarText: { fontSize: FontSize.sm, fontWeight: '800', color: Colors.warning },
+  info: { flex: 1, gap: 4 },
+  name: { fontSize: FontSize.base, fontWeight: '700', color: Colors.textPrimary },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta: { fontSize: FontSize.xs, color: Colors.textMuted },
+  pendingPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: `${Colors.warning}15`, borderRadius: BorderRadius.full,
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderWidth: 1, borderColor: `${Colors.warning}40`, flexShrink: 0,
+  },
+  pendingPillDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.warning },
+  pendingPillText: { fontSize: 9, fontWeight: '800', color: Colors.warning, letterSpacing: 0.6 },
+  actions: { flexDirection: 'row', gap: Spacing.sm },
+  rejectBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.dangerBg, borderRadius: BorderRadius.md,
+    paddingVertical: 10, borderWidth: 1, borderColor: `${Colors.danger}40`,
+  },
+  rejectBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: Colors.danger },
+  approveBtn: {
+    flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.success, borderRadius: BorderRadius.md,
+    paddingVertical: 10,
+  },
+  approveBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: '#fff' },
+});
   const SkelBox = ({ w, h, radius = 6 }: { w: number | string; h: number; radius?: number }) => (
     <Animated.View style={{ width: w as any, height: h, borderRadius: radius, backgroundColor: bg }} />
   );
@@ -67,6 +135,73 @@ const skelStyles = StyleSheet.create({
   pillRow: { flexDirection: 'row', gap: 6 },
 });
 
+const pendingSt = StyleSheet.create({
+  section: {
+    marginHorizontal: Spacing.xl, marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg, overflow: 'hidden',
+    borderWidth: 1.5, borderColor: `${Colors.warning}50`,
+  },
+  headerRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    backgroundColor: Colors.warningBg,
+    borderBottomWidth: 1, borderBottomColor: `${Colors.warning}30`,
+    flexWrap: 'wrap', gap: Spacing.xs,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  iconWrap: {
+    width: 24, height: 24, borderRadius: 7,
+    backgroundColor: `${Colors.warning}20`, borderWidth: 1, borderColor: `${Colors.warning}40`,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitle: { fontSize: 10, fontWeight: '800', color: Colors.warning, letterSpacing: 0.9 },
+  badge: {
+    backgroundColor: Colors.warning, borderRadius: 10,
+    minWidth: 18, height: 18, paddingHorizontal: 5,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  badgeText: { fontSize: 9, fontWeight: '800', color: Colors.bg },
+  headerSub: { fontSize: FontSize.xs, color: Colors.warning, opacity: 0.75, marginLeft: 4 },
+  card: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+  },
+  accentBar: { width: 3, backgroundColor: Colors.warning, alignSelf: 'stretch' },
+  cardInner: { flex: 1, padding: Spacing.lg, gap: Spacing.md },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md },
+  avatar: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: `${Colors.warning}15`, borderWidth: 2, borderColor: `${Colors.warning}50`,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  avatarText: { fontSize: FontSize.sm, fontWeight: '800', color: Colors.warning },
+  info: { flex: 1, gap: 4 },
+  name: { fontSize: FontSize.base, fontWeight: '700', color: Colors.textPrimary },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta: { fontSize: FontSize.xs, color: Colors.textMuted },
+  pendingPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: `${Colors.warning}15`, borderRadius: BorderRadius.full,
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderWidth: 1, borderColor: `${Colors.warning}40`, flexShrink: 0,
+  },
+  pendingPillDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.warning },
+  pendingPillText: { fontSize: 9, fontWeight: '800', color: Colors.warning, letterSpacing: 0.6 },
+  actions: { flexDirection: 'row', gap: Spacing.sm },
+  rejectBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.dangerBg, borderRadius: BorderRadius.md,
+    paddingVertical: 10, borderWidth: 1, borderColor: `${Colors.danger}40`,
+  },
+  rejectBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: Colors.danger },
+  approveBtn: {
+    flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.success, borderRadius: BorderRadius.md,
+    paddingVertical: 10,
+  },
+  approveBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: '#fff' },
+});
+
 // ── Stat skeleton ─────────────────────────────────────────────────────────────
 function StatSkeleton() {
   const { colors } = useTheme();
@@ -82,6 +217,73 @@ function StatSkeleton() {
     return () => loop.stop();
   }, []);
   const bg = shimmer.interpolate({ inputRange: [0, 1], outputRange: [colors.surface, colors.card] });
+
+const pendingSt = StyleSheet.create({
+  section: {
+    marginHorizontal: Spacing.xl, marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg, overflow: 'hidden',
+    borderWidth: 1.5, borderColor: `${Colors.warning}50`,
+  },
+  headerRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    backgroundColor: Colors.warningBg,
+    borderBottomWidth: 1, borderBottomColor: `${Colors.warning}30`,
+    flexWrap: 'wrap', gap: Spacing.xs,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  iconWrap: {
+    width: 24, height: 24, borderRadius: 7,
+    backgroundColor: `${Colors.warning}20`, borderWidth: 1, borderColor: `${Colors.warning}40`,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitle: { fontSize: 10, fontWeight: '800', color: Colors.warning, letterSpacing: 0.9 },
+  badge: {
+    backgroundColor: Colors.warning, borderRadius: 10,
+    minWidth: 18, height: 18, paddingHorizontal: 5,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  badgeText: { fontSize: 9, fontWeight: '800', color: Colors.bg },
+  headerSub: { fontSize: FontSize.xs, color: Colors.warning, opacity: 0.75, marginLeft: 4 },
+  card: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+  },
+  accentBar: { width: 3, backgroundColor: Colors.warning, alignSelf: 'stretch' },
+  cardInner: { flex: 1, padding: Spacing.lg, gap: Spacing.md },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md },
+  avatar: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: `${Colors.warning}15`, borderWidth: 2, borderColor: `${Colors.warning}50`,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  avatarText: { fontSize: FontSize.sm, fontWeight: '800', color: Colors.warning },
+  info: { flex: 1, gap: 4 },
+  name: { fontSize: FontSize.base, fontWeight: '700', color: Colors.textPrimary },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta: { fontSize: FontSize.xs, color: Colors.textMuted },
+  pendingPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: `${Colors.warning}15`, borderRadius: BorderRadius.full,
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderWidth: 1, borderColor: `${Colors.warning}40`, flexShrink: 0,
+  },
+  pendingPillDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.warning },
+  pendingPillText: { fontSize: 9, fontWeight: '800', color: Colors.warning, letterSpacing: 0.6 },
+  actions: { flexDirection: 'row', gap: Spacing.sm },
+  rejectBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.dangerBg, borderRadius: BorderRadius.md,
+    paddingVertical: 10, borderWidth: 1, borderColor: `${Colors.danger}40`,
+  },
+  rejectBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: Colors.danger },
+  approveBtn: {
+    flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.success, borderRadius: BorderRadius.md,
+    paddingVertical: 10,
+  },
+  approveBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: '#fff' },
+});
   return (
     <View style={[styles.statItem, { backgroundColor: colors.card, gap: 6, borderColor: colors.border }]}>
       <Animated.View style={{ width: 28, height: 22, borderRadius: 4, backgroundColor: bg }} />
@@ -101,7 +303,8 @@ function useScreenWidth() {
 
 export default function DriversScreen() {
   const router = useRouter();
-  const { drivers, loading } = useDrivers();
+  const { drivers, pendingDrivers, loading, approvalLoading, approve, reject } = useDrivers();
+  const { showAlert } = useAlert();
   const [selected, setSelected] = useState<Driver | null>(null);
   const { t, isRTL } = useLanguage();
   const { colors, isDark } = useTheme();
@@ -112,6 +315,29 @@ export default function DriversScreen() {
   const idleCount = drivers.filter(d => d.status === 'Idle').length;
   const offlineCount = drivers.filter(d => d.status === 'Offline').length;
   const unverifiedCount = drivers.filter(d => !d.emailVerified).length;
+
+  const handleApprove = async (id: string, name: string) => {
+    const err = await approve(id);
+    if (err) showAlert('Approval failed', err);
+    else showAlert('Driver Approved', `${name} can now log in and receive shipments.`);
+  };
+
+  const handleReject = async (id: string, name: string) => {
+    showAlert(
+      `Reject ${name}?`,
+      'Their registration will be marked as rejected and they will not be able to access the driver app.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reject', style: 'destructive',
+          onPress: async () => {
+            const err = await reject(id);
+            if (err) showAlert('Rejection failed', err);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
@@ -132,6 +358,115 @@ export default function DriversScreen() {
           </Pressable>
         </View>
       </View>
+
+      {/* ── Pending Approval Section ── */}
+      {pendingDrivers.length > 0 && (
+        <View style={[pendingSt.section, { backgroundColor: colors.bg }]}>
+          <View style={[pendingSt.headerRow, { borderBottomColor: colors.border }]}>
+            <View style={pendingSt.headerLeft}>
+              <View style={pendingSt.iconWrap}>
+                <MaterialIcons name="pending-actions" size={14} color={Colors.warning} />
+              </View>
+              <Text style={pendingSt.headerTitle}>PENDING APPROVAL</Text>
+              <View style={pendingSt.badge}>
+                <Text style={pendingSt.badgeText}>{pendingDrivers.length}</Text>
+              </View>
+            </View>
+            <Text style={pendingSt.headerSub}>New driver registrations awaiting review</Text>
+          </View>
+
+          <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+            {pendingDrivers.map((driver, idx) => {
+              const isLoading = !!approvalLoading[driver.id];
+              return (
+                <View
+                  key={driver.id}
+                  style={[
+                    pendingSt.card,
+                    { backgroundColor: colors.card, borderColor: colors.border },
+                    idx < pendingDrivers.length - 1 && { borderBottomColor: colors.border },
+                  ]}
+                >
+                  {/* Left warning accent */}
+                  <View style={pendingSt.accentBar} />
+
+                  <View style={pendingSt.cardInner}>
+                    {/* Avatar + info */}
+                    <View style={[pendingSt.topRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                      <View style={pendingSt.avatar}>
+                        <Text style={pendingSt.avatarText}>{driver.avatarInitials}</Text>
+                      </View>
+                      <View style={pendingSt.info}>
+                        <Text style={[pendingSt.name, { color: colors.textPrimary }]}>{driver.fullName}</Text>
+                        <View style={[pendingSt.metaRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                          <MaterialIcons name="local-shipping" size={10} color={Colors.textMuted} />
+                          <Text style={[pendingSt.meta, { color: colors.textMuted }]} numberOfLines={1}>
+                            {driver.plateNumber} · {driver.truckClass}
+                          </Text>
+                        </View>
+                        {driver.email ? (
+                          <View style={[pendingSt.metaRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                            <MaterialIcons name="mail-outline" size={10} color={Colors.textMuted} />
+                            <Text style={[pendingSt.meta, { color: colors.textMuted }]} numberOfLines={1}>{driver.email}</Text>
+                          </View>
+                        ) : null}
+                        {driver.phone ? (
+                          <View style={[pendingSt.metaRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                            <MaterialIcons name="phone" size={10} color={Colors.textMuted} />
+                            <Text style={[pendingSt.meta, { color: colors.textMuted }]}>{driver.phone}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+                      <View style={pendingSt.pendingPill}>
+                        <View style={pendingSt.pendingPillDot} />
+                        <Text style={pendingSt.pendingPillText}>PENDING</Text>
+                      </View>
+                    </View>
+
+                    {/* Action buttons */}
+                    <View style={[pendingSt.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                      <Pressable
+                        style={({ pressed }) => [
+                          pendingSt.rejectBtn,
+                          (pressed || isLoading) && { opacity: 0.7 },
+                        ]}
+                        onPress={() => handleReject(driver.id, driver.fullName)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <ActivityIndicator size="small" color={Colors.danger} />
+                        ) : (
+                          <>
+                            <MaterialIcons name="close" size={14} color={Colors.danger} />
+                            <Text style={pendingSt.rejectBtnText}>Reject</Text>
+                          </>
+                        )}
+                      </Pressable>
+                      <Pressable
+                        style={({ pressed }) => [
+                          pendingSt.approveBtn,
+                          (pressed || isLoading) && { opacity: 0.7 },
+                        ]}
+                        onPress={() => handleApprove(driver.id, driver.fullName)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                          <>
+                            <MaterialIcons name="check" size={14} color="#fff" />
+                            <Text style={pendingSt.approveBtnText}>Approve</Text>
+                          </>
+                        )}
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {/* Stats strip */}
       {loading ? (
@@ -483,4 +818,71 @@ const styles = StyleSheet.create({
   },
   detailEmptyTitle: { fontSize: FontSize.xl, fontWeight: '600', color: Colors.textSecondary },
   detailEmptySub: { fontSize: FontSize.sm, color: Colors.textMuted, textAlign: 'center', lineHeight: 22, maxWidth: 320 },
+});
+
+const pendingSt = StyleSheet.create({
+  section: {
+    marginHorizontal: Spacing.xl, marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg, overflow: 'hidden',
+    borderWidth: 1.5, borderColor: `${Colors.warning}50`,
+  },
+  headerRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    backgroundColor: Colors.warningBg,
+    borderBottomWidth: 1, borderBottomColor: `${Colors.warning}30`,
+    flexWrap: 'wrap', gap: Spacing.xs,
+  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  iconWrap: {
+    width: 24, height: 24, borderRadius: 7,
+    backgroundColor: `${Colors.warning}20`, borderWidth: 1, borderColor: `${Colors.warning}40`,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitle: { fontSize: 10, fontWeight: '800', color: Colors.warning, letterSpacing: 0.9 },
+  badge: {
+    backgroundColor: Colors.warning, borderRadius: 10,
+    minWidth: 18, height: 18, paddingHorizontal: 5,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  badgeText: { fontSize: 9, fontWeight: '800', color: Colors.bg },
+  headerSub: { fontSize: FontSize.xs, color: Colors.warning, opacity: 0.75, marginLeft: 4 },
+  card: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+  },
+  accentBar: { width: 3, backgroundColor: Colors.warning, alignSelf: 'stretch' },
+  cardInner: { flex: 1, padding: Spacing.lg, gap: Spacing.md },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md },
+  avatar: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: `${Colors.warning}15`, borderWidth: 2, borderColor: `${Colors.warning}50`,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  avatarText: { fontSize: FontSize.sm, fontWeight: '800', color: Colors.warning },
+  info: { flex: 1, gap: 4 },
+  name: { fontSize: FontSize.base, fontWeight: '700', color: Colors.textPrimary },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta: { fontSize: FontSize.xs, color: Colors.textMuted },
+  pendingPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: `${Colors.warning}15`, borderRadius: BorderRadius.full,
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderWidth: 1, borderColor: `${Colors.warning}40`, flexShrink: 0,
+  },
+  pendingPillDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.warning },
+  pendingPillText: { fontSize: 9, fontWeight: '800', color: Colors.warning, letterSpacing: 0.6 },
+  actions: { flexDirection: 'row', gap: Spacing.sm },
+  rejectBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.dangerBg, borderRadius: BorderRadius.md,
+    paddingVertical: 10, borderWidth: 1, borderColor: `${Colors.danger}40`,
+  },
+  rejectBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: Colors.danger },
+  approveBtn: {
+    flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: Colors.success, borderRadius: BorderRadius.md,
+    paddingVertical: 10,
+  },
+  approveBtnText: { fontSize: FontSize.sm, fontWeight: '700', color: '#fff' },
 });
