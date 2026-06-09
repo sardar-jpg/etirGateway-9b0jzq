@@ -36,6 +36,7 @@ import {
 } from '@/services/documentService';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ChatMessage, Driver } from '@/types';
 
 type DriverTab = 'job' | 'chat' | 'notifications' | 'profile' | 'report';
@@ -153,7 +154,7 @@ const infoRowStyles = StyleSheet.create({
 export default function DriverCompanion() {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
   const driverId = user?.driverId ?? '';
   const { shipments: allShipments, acceptPrice, updateStatus } = useShipments();
   const { myThread, threads, sendMessage, initDriverThread } = useChat(driverId || undefined);
@@ -584,11 +585,11 @@ export default function DriverCompanion() {
   const initials = driverProfile?.avatarInitials ?? user?.displayName?.substring(0, 2).toUpperCase() ?? 'DR';
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ── Header ── */}
-      <View style={[styles.header, isRtl && styles.rowReverse]}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && styles.rowReverse]}>
         <View style={[styles.headerLeft, isRtl && styles.rowReverse]}>
           <View style={styles.avatarWrap}>
             <View style={styles.avatar}>
@@ -617,12 +618,13 @@ export default function DriverCompanion() {
           </View>
         </View>
         <View style={styles.headerRight}>
+          <ThemeToggle size="sm" />
           <LanguagePicker compact />
         </View>
       </View>
 
       {/* ── Tab Bar ── */}
-      <View style={[styles.tabBar, isRtl && styles.rowReverse]}>
+      <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && styles.rowReverse]}>
         <TabItem id="job" icon="assignment" label={t('driverApp.myJob')} active={activeTab === 'job'} onPress={() => setActiveTab('job')} />
         <TabItem id="chat" icon="chat" label={t('driverApp.dispatch')} active={activeTab === 'chat'} badge={resolvedThread?.unreadCount} onPress={() => setActiveTab('chat')} />
         <TabItem id="notifications" icon="notifications" label={t('driverApp.notifications')} active={activeTab === 'notifications'} badge={unreadCount} onPress={() => setActiveTab('notifications')} />

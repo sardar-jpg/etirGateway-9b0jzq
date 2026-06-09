@@ -14,6 +14,8 @@ import { CheckpointProgress } from '@/components/ui/CheckpointProgress';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Shipment, ShipmentStatus, Client } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -771,6 +773,7 @@ const detSt = StyleSheet.create({
 export default function CustomerPortal() {
   const router = useRouter();
   const { t, language } = useLanguage();
+  const { isDark, colors } = useTheme();
   const isRtl = language === 'ar';
 
   // ── Auth state ────────────────────────────────────────────────────────────
@@ -1090,8 +1093,8 @@ export default function CustomerPortal() {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
-      <SafeAreaView style={styles.splashRoot}>
-        <StatusBar style="light" />
+      <SafeAreaView style={[styles.splashRoot, { backgroundColor: colors.bg }]}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <View style={styles.splashLogoWrap}>
           <MaterialIcons name="business-center" size={28} color={Colors.primary} />
         </View>
@@ -1106,14 +1109,14 @@ export default function CustomerPortal() {
   // ══════════════════════════════════════════════════════════════════════════
   if (!session) {
     return (
-      <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
-        <StatusBar style="light" />
+      <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top', 'bottom']}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <View style={styles.gridOverlay} pointerEvents="none">
           {[0, 1, 2, 3].map(i => <View key={i} style={[styles.gridLine, { left: `${i * 33}%` as any }]} />)}
         </View>
 
         {/* Top bar */}
-        <View style={[styles.topBar, isRtl && styles.rowReverse]}>
+        <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && styles.rowReverse]}>
           <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}>
             <MaterialIcons name={isRtl ? 'arrow-forward' : 'arrow-back'} size={18} color={Colors.textSecondary} />
           </Pressable>
@@ -1122,6 +1125,7 @@ export default function CustomerPortal() {
             <Text style={styles.topBarTitle}>{t('customer.portalTitle')}</Text>
           </View>
           <LanguagePicker compact />
+          <ThemeToggle size="sm" />
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -1353,8 +1357,8 @@ export default function CustomerPortal() {
 
   if (clientLoading) {
     return (
-      <SafeAreaView style={styles.splashRoot}>
-        <StatusBar style="light" />
+      <SafeAreaView style={[styles.splashRoot, { backgroundColor: colors.bg }]}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <View style={styles.splashLogoWrap}>
           <MaterialIcons name="business-center" size={28} color={Colors.primary} />
         </View>
@@ -1367,9 +1371,9 @@ export default function CustomerPortal() {
   // ── No Account ─────────────────────────────────────────────────────────────
   if (noAccount) {
     return (
-      <SafeAreaView style={styles.root} edges={['top']}>
-        <StatusBar style="light" />
-        <View style={[styles.topBar, isRtl && styles.rowReverse]}>
+      <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && styles.rowReverse]}>
           <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={8}><MaterialIcons name={isRtl ? 'arrow-forward' : 'arrow-back'} size={18} color={Colors.textSecondary} /></Pressable>
           <View style={styles.topBarCenter}><View style={styles.topBarIcon}><MaterialIcons name="business-center" size={13} color={Colors.primary} /></View><Text style={styles.topBarTitle}>{t('customer.portalTitle')}</Text></View>
           <Pressable style={[styles.backBtn, { backgroundColor: Colors.dangerBg, borderColor: `${Colors.danger}30` }]} onPress={handleLogout} hitSlop={8}><MaterialIcons name="logout" size={17} color={Colors.danger} /></Pressable>
@@ -1407,14 +1411,14 @@ export default function CustomerPortal() {
   const hasDetained = stats.detained > 0;
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Toast */}
       {toastNotif ? <ToastBanner notif={toastNotif} onDismiss={() => setToastNotif(null)} /> : null}
 
       {/* ── Header ── */}
-      <View style={[styles.dashHeader, isRtl && styles.rowReverse]}>
+      <View style={[styles.dashHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }, isRtl && styles.rowReverse]}>
         <View style={[styles.dashHeaderLeft, isRtl && styles.rowReverse]}>
           <View style={styles.dashAvatarWrap}>
             <View style={styles.dashAvatar}><Text style={styles.dashAvatarText}>{initials}</Text></View>
@@ -1429,6 +1433,7 @@ export default function CustomerPortal() {
           </View>
         </View>
         <View style={[styles.dashHeaderRight, isRtl && styles.rowReverse]}>
+          <ThemeToggle size="sm" />
           <LanguagePicker compact />
           <Pressable style={styles.refreshBtn} onPress={() => clientRecord && loadShipments(clientRecord.id)} hitSlop={8}>
             <MaterialIcons name="refresh" size={16} color={Colors.primary} />
@@ -1453,7 +1458,7 @@ export default function CustomerPortal() {
       )}
 
       {/* ── Tab Switcher ── */}
-      <View style={styles.tabSwitcher}>
+      <View style={[styles.tabSwitcher, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <Pressable style={[styles.tabBtn, activeTab === 'shipments' && styles.tabBtnActive]} onPress={() => setActiveTab('shipments')}>
           <MaterialIcons name="local-shipping" size={15} color={activeTab === 'shipments' ? Colors.primary : Colors.textMuted} />
           <Text style={[styles.tabBtnText, activeTab === 'shipments' && styles.tabBtnTextActive]}>{t('customer.shipmentsTab')}</Text>
