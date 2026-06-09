@@ -71,7 +71,7 @@ export function AdminSidebar() {
             <Text style={{ fontSize: FontSize.base, fontWeight: '700', color: colors.textPrimary, letterSpacing: 0.2 }}>e-TIR Gateway</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 }}>
               <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: colors.success }} />
-              <Text style={{ fontSize: 10, color: colors.textMuted }}>MARAS Group · v2.0</Text>
+              <Text style={{ fontSize: 10, color: colors.textMuted }}>MARAS Group · v2.1</Text>
             </View>
           </View>
         </View>

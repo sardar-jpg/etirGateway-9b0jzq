@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Shipment, ShipmentStatus } from '@/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
@@ -13,31 +13,27 @@ interface Props {
   selected?: boolean;
 }
 
-// Status → left-border accent color
+// Status → left-accent color
 const STATUS_ACCENT: Record<ShipmentStatus, string> = {
-  // Road
-  Loaded:                   Colors.info,
-  Dispatched:               '#D2A8FF',
-  'In Transit':             Colors.primary,
-  'Border Crossing':        '#D2A8FF',
-  'Customs Clearance':      Colors.warning,
-  'Customs Pending':        Colors.warning,
-  Arrived:                  Colors.success,
-  Detained:                 Colors.danger,
-  // Sea
-  Booked:                   '#38BDF8',
-  'At Port of Loading':     '#818CF8',
-  'Vessel Departed':        '#0EA5E9',
-  'At Sea':                 Colors.primary,
-  'At Port of Discharge':   '#818CF8',
-  'Port Customs':           Colors.warning,
-  // Air
-  'Awaiting Flight':        '#7DD3FC',
-  'In Flight':              '#38BDF8',
-  'Arrived at Hub':         '#34D399',
+  Loaded:                  Colors.statusLoaded,
+  Dispatched:              Colors.statusDispatched,
+  'In Transit':            Colors.statusInTransit,
+  'Border Crossing':       Colors.statusDispatched,
+  'Customs Clearance':     Colors.warning,
+  'Customs Pending':       Colors.statusCustomsPending,
+  Arrived:                 Colors.success,
+  Detained:                Colors.danger,
+  Booked:                  Colors.statusBooked,
+  'At Port of Loading':    Colors.statusAtPort,
+  'Vessel Departed':       Colors.statusVesselDeparted,
+  'At Sea':                Colors.statusAtSea,
+  'At Port of Discharge':  Colors.statusAtPort,
+  'Port Customs':          Colors.warning,
+  'Awaiting Flight':       Colors.statusAwaitingFlight,
+  'In Flight':             Colors.statusInFlight,
+  'Arrived at Hub':        Colors.statusArrivedHub,
 };
 
-// Progress bar color: changes based on completion
 function progressColor(ratio: number): string {
   if (ratio >= 1)   return Colors.success;
   if (ratio >= 0.6) return Colors.primary;
@@ -54,6 +50,7 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
   const pct        = Math.round(ratio * 100);
   const accentColor = STATUS_ACCENT[shipment.status] ?? Colors.primary;
   const barColor    = progressColor(ratio);
+  const typeColor   = SHIPMENT_TYPE_COLORS[shipment.shipmentType as 'Road' | 'Air' | 'Sea'] ?? SHIPMENT_TYPE_COLORS.Road;
 
   return (
     <Pressable
@@ -67,87 +64,100 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
       accessibilityRole="button"
       accessibilityLabel={`Shipment ${shipment.tirNumber}`}
     >
-      {/* ── Colored left-border accent ── */}
+      {/* Colored left-accent stripe */}
       <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
       <View style={styles.inner}>
-        {/* ── Top row: TIR + status badge ── */}
+        {/* Top row: TIR + status badge */}
         <View style={styles.topRow}>
           <View style={styles.tirChip}>
-            <MaterialIcons name="confirmation-number" size={11} color={Colors.textMuted} />
-            <Text style={[styles.tirNumber, { color: colors.textSecondary }]} numberOfLines={1}>{shipment.tirNumber}</Text>
+            <View style={[styles.typeIconWrap, { backgroundColor: `${typeColor}18` }]}>
+              <MaterialIcons
+                name={shipment.shipmentType === 'Air' ? 'flight' : shipment.shipmentType === 'Sea' ? 'directions-boat' : 'local-shipping'}
+                size={10}
+                color={typeColor}
+              />
+            </View>
+            <Text style={[styles.tirNumber, { color: colors.textSecondary }]} numberOfLines={1}>
+              {shipment.tirNumber}
+            </Text>
           </View>
           <StatusBadge status={shipment.status} size="sm" />
         </View>
 
-        {/* ── Horizontal route line ── */}
+        {/* Route row */}
         <View style={styles.routeWrap}>
-          {/* Origin */}
           <View style={styles.routeEndpoint}>
             <View style={[styles.routeDot, { backgroundColor: Colors.primary, borderColor: `${Colors.primary}40` }]} />
-            <Text style={[styles.routeCity, { color: colors.textPrimary }]} numberOfLines={1}>{shipment.origin}</Text>
+            <Text style={[styles.routeCity, { color: colors.textPrimary }]} numberOfLines={1}>
+              {shipment.origin}
+            </Text>
           </View>
 
-          {/* Dashed line with truck */}
           <View style={styles.routeMid}>
-            <View style={[styles.routeDash, { backgroundColor: `${accentColor}30` }]} />
-            <View style={[styles.truckIconWrap, { backgroundColor: `${accentColor}18`, borderColor: `${accentColor}35` }]}>
+            <View style={[styles.routeDash, { backgroundColor: `${accentColor}25` }]} />
+            <View style={[styles.truckIconWrap, { backgroundColor: `${accentColor}15`, borderColor: `${accentColor}30` }]}>
               <MaterialIcons
                 name={shipment.shipmentType === 'Air' ? 'flight' : shipment.shipmentType === 'Sea' ? 'directions-boat' : 'local-shipping'}
-                size={11}
+                size={10}
                 color={accentColor}
               />
             </View>
-            <View style={[styles.routeDash, { backgroundColor: `${accentColor}30` }]} />
+            <View style={[styles.routeDash, { backgroundColor: `${accentColor}25` }]} />
           </View>
 
-          {/* Destination */}
           <View style={[styles.routeEndpoint, styles.routeEndpointRight]}>
-            <Text style={[styles.routeCity, styles.routeCityRight, { color: colors.textPrimary }]} numberOfLines={1}>{shipment.destination}</Text>
+            <Text style={[styles.routeCity, styles.routeCityRight, { color: colors.textPrimary }]} numberOfLines={1}>
+              {shipment.destination}
+            </Text>
             <View style={[styles.routeDot, { backgroundColor: Colors.success, borderColor: `${Colors.success}40` }]} />
           </View>
         </View>
 
-        {/* ── Mini checkpoint progress bar ── */}
+        {/* Progress bar */}
         <View style={styles.progressSection}>
           <View style={[styles.progressTrack, { backgroundColor: colors.surface }]}>
             <View style={[styles.progressFill, { width: `${pct}%`, backgroundColor: barColor }]} />
-            {/* Checkpoint ticks — rendered at fixed intervals using flex */}
+            {/* Glow cap at end of fill */}
+            {pct > 5 && (
+              <View style={[styles.progressGlow, { left: `${pct}%` as any, backgroundColor: barColor }]} />
+            )}
           </View>
           <View style={styles.progressMeta}>
             <Text style={styles.progressLabel}>
-              <Text style={{ color: barColor, fontWeight: '600' }}>{cleared}</Text>
+              <Text style={{ color: barColor, fontWeight: '700' }}>{cleared}</Text>
               <Text style={styles.progressSlash}>/{total}</Text>
-              {' checkpoints'}
+              <Text> checkpoints</Text>
             </Text>
             <Text style={[styles.progressPct, { color: barColor }]}>{pct}%</Text>
           </View>
         </View>
 
-        {/* ── Footer meta ── */}
+        {/* Footer meta */}
         {!compact && (
           <View style={[styles.footer, { borderTopColor: colors.borderSubtle }]}>
             <View style={styles.metaItem}>
-              <MaterialIcons name="person" size={11} color={Colors.textMuted} />
-              <Text style={styles.metaText} numberOfLines={1}>{shipment.driverName}</Text>
+              <MaterialIcons name="person" size={10} color={Colors.textMuted} />
+              <Text style={[styles.metaText, { color: colors.textSecondary }]} numberOfLines={1}>
+                {shipment.driverName}
+              </Text>
             </View>
 
-            {/* Fleet badge — shown when multi-truck road order */}
             {(shipment.shipmentType === 'Road' || !shipment.shipmentType) &&
              shipment.additionalDrivers && shipment.additionalDrivers.length > 0 ? (
               <View style={styles.fleetBadge}>
-                <MaterialIcons name="local-shipping" size={10} color={Colors.primary} />
-                <Text style={styles.fleetBadgeText}>
-                  {shipment.additionalDrivers.length + 1} trucks
-                </Text>
+                <MaterialIcons name="local-shipping" size={9} color={Colors.primary} />
+                <Text style={styles.fleetBadgeText}>{shipment.additionalDrivers.length + 1} trucks</Text>
               </View>
             ) : null}
 
             <View style={styles.metaDivider} />
 
             <View style={styles.metaItem}>
-              <MaterialIcons name="pin" size={11} color={Colors.textMuted} />
-              <Text style={styles.metaText}>{shipment.plateNumber}</Text>
+              <MaterialIcons name="pin" size={10} color={Colors.textMuted} />
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                {shipment.plateNumber}
+              </Text>
             </View>
 
             <View style={styles.metaDivider} />
@@ -155,15 +165,20 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
             <View style={styles.metaItem}>
               <MaterialIcons
                 name={shipment.shipmentType === 'Sea' ? 'directions-boat' : 'schedule'}
-                size={11}
-                color={shipment.shipmentType === 'Sea' ? Colors.primary : Colors.textMuted}
+                size={10}
+                color={shipment.shipmentType === 'Sea' ? typeColor : Colors.textMuted}
               />
-              <Text style={[styles.metaText, shipment.shipmentType === 'Sea' && { color: Colors.primary, fontWeight: '600' }]}>
-                {shipment.shipmentType === 'Sea' ? `Port ETA: ${shipment.estimatedArrival}` : shipment.estimatedArrival}
+              <Text style={[
+                styles.metaText,
+                { color: colors.textSecondary },
+                shipment.shipmentType === 'Sea' && { color: typeColor, fontWeight: '600' },
+              ]}>
+                {shipment.shipmentType === 'Sea'
+                  ? `Port ETA: ${shipment.estimatedArrival}`
+                  : (shipment.estimatedArrival || 'TBD')}
               </Text>
             </View>
 
-            {/* Agreed price badge — right-aligned */}
             {shipment.agreedPrice ? (
               <View style={[
                 styles.priceBadge,
@@ -171,7 +186,7 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
               ]}>
                 <MaterialIcons
                   name={shipment.priceAccepted ? 'verified' : 'handshake'}
-                  size={10}
+                  size={9}
                   color={shipment.priceAccepted ? Colors.success : Colors.warning}
                 />
                 <Text style={[
@@ -199,13 +214,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...Shadow.card,
   },
-  cardSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.cardHover,
-  },
-  pressed: { opacity: 0.82 },
+  pressed: { opacity: 0.80 },
 
-  // Left accent stripe
   accentBar: {
     width: 3,
     borderTopLeftRadius: BorderRadius.lg,
@@ -228,22 +238,31 @@ const styles = StyleSheet.create({
   tirChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     flex: 1,
+    minWidth: 0,
+  },
+  typeIconWrap: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
   tirNumber: {
     fontSize: FontSize.xs,
     color: Colors.textSecondary,
     fontFamily: 'monospace',
-    letterSpacing: 0.4,
+    letterSpacing: 0.5,
     flex: 1,
+    fontWeight: '600',
   },
 
-  // Horizontal route line
+  // Route
   routeWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 0,
   },
   routeEndpoint: {
     flexDirection: 'row',
@@ -256,15 +275,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   routeDot: {
-    width: 10,
-    height: 10,
+    width: 9,
+    height: 9,
     borderRadius: 5,
     borderWidth: 2,
     flexShrink: 0,
   },
   routeCity: {
     fontSize: FontSize.sm,
-    fontWeight: '600',
+    fontWeight: '700',
     color: Colors.textPrimary,
     flex: 1,
   },
@@ -275,7 +294,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    paddingHorizontal: 4,
+    paddingHorizontal: 5,
   },
   routeDash: {
     flex: 1,
@@ -298,9 +317,9 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 5,
-    backgroundColor: Colors.surface,
     borderRadius: 3,
     overflow: 'hidden',
+    position: 'relative',
   },
   progressFill: {
     height: 5,
@@ -309,13 +328,13 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
   },
-  progressTick: {
+  progressGlow: {
     position: 'absolute',
-    top: -1,
-    width: 1,
-    height: 7,
-    backgroundColor: Colors.bg,
-    transform: [{ translateX: -0.5 }],
+    width: 4,
+    height: 5,
+    opacity: 0.6,
+    marginLeft: -4,
+    borderRadius: 2,
   },
   progressMeta: {
     flexDirection: 'row',
@@ -332,7 +351,7 @@ const styles = StyleSheet.create({
   },
   progressPct: {
     fontSize: FontSize.xs,
-    fontWeight: '700',
+    fontWeight: '800',
     fontFamily: 'monospace',
   },
 
@@ -341,7 +360,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: Spacing.sm,
+    gap: 6,
     paddingTop: Spacing.xs,
     borderTopWidth: 1,
     borderTopColor: Colors.borderSubtle,
@@ -358,11 +377,10 @@ const styles = StyleSheet.create({
   },
   metaDivider: {
     width: 1,
-    height: 10,
+    height: 9,
     backgroundColor: Colors.borderSubtle,
   },
 
-  // Fleet badge
   fleetBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -372,15 +390,14 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderWidth: 1,
     backgroundColor: Colors.primaryGlow,
-    borderColor: 'rgba(47,129,247,0.3)',
+    borderColor: Colors.primaryBorder,
   },
   fleetBadgeText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     color: Colors.primary,
   },
 
-  // Agreed price badge
   priceBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -393,14 +410,14 @@ const styles = StyleSheet.create({
   },
   priceBadgeAccepted: {
     backgroundColor: Colors.successBg,
-    borderColor: `${Colors.success}40`,
+    borderColor: `${Colors.success}35`,
   },
   priceBadgePending: {
     backgroundColor: Colors.warningBg,
-    borderColor: `${Colors.warning}40`,
+    borderColor: `${Colors.warning}35`,
   },
   priceBadgeText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
   },
 });
