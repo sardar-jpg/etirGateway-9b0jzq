@@ -7,11 +7,14 @@ import { DriversProvider } from '@/contexts/DriversContext';
 import { ChatProvider } from '@/contexts/ChatContext';
 import { ClientsProvider } from '@/contexts/ClientsContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ForceUpdateGate } from '@/components/ui/ForceUpdateGate';
+import { ThemedStatusBar } from '@/components/ui/ThemedStatusBar';
 
 export default function RootLayout() {
   return (
     <AlertProvider>
+      <ThemeProvider>
       <ForceUpdateGate>
       <LanguageProvider>
         <SafeAreaProvider>
@@ -20,6 +23,7 @@ export default function RootLayout() {
             <DriversProvider>
               <ClientsProvider>
               <ChatProvider>
+                  <ThemedStatusBar />
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="index" />
                     <Stack.Screen name="(tabs)" />
@@ -37,6 +41,7 @@ export default function RootLayout() {
         </SafeAreaProvider>
       </LanguageProvider>
       </ForceUpdateGate>
+      </ThemeProvider>
     </AlertProvider>
   );
 }

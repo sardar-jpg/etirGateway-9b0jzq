@@ -27,6 +27,8 @@ function getLazyShipmentDetail() {
 }
 import { Shipment, ShipmentStatus } from '@/types';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 // ── Shimmer skeleton ──────────────────────────────────────────────────────────
 function SkeletonBox({ w, h, radius = 6, style }: { w?: number | string; h: number; radius?: number; style?: object }) {
@@ -232,6 +234,7 @@ export default function ShipmentsScreen() {
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   const { shipments, loading: shipmentsLoading, updateStatus, assignDriver, updateETA, pollError, clearPollError } = useShipments();
   const { t, isRTL } = useLanguage();
+  const { colors, isDark } = useTheme();
 
   const [statusFilter, setStatusFilter] = useState<FilterKey>('All');
   const [typeFilter,   setTypeFilter]   = useState<TypeFilter>('All');
@@ -335,8 +338,8 @@ export default function ShipmentsScreen() {
   }, [clearClientFilter]);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ══════════ HEADER ══════════ */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -351,6 +354,7 @@ export default function ShipmentsScreen() {
         </View>
         <View style={[styles.headerRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           {!isDesktop && <LanguagePicker compact />}
+          {!isDesktop && <ThemeToggle size="sm" />}
           {seaShipmentCount > 0 && (
             <Pressable
               style={({ pressed }) => [styles.seaMapBtn, pressed && { opacity: 0.85 }]}

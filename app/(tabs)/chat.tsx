@@ -14,6 +14,8 @@ import { usePickAttachment } from '@/hooks/usePickAttachment';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ChatMessage, ChatThread } from '@/types';
 
 function useScreenWidth() {
@@ -440,6 +442,7 @@ const tlSt = StyleSheet.create({
 // ── Main Chat Screen ───────────────────────────────────────────────────────────
 export default function ChatScreen() {
   const { user } = useAuth();
+  const { colors, isDark } = useTheme();
   const { threads, activeThread, activeThreadId, setActiveThreadId, markRead, totalUnread, refresh, isOffline, messageQueue } = useChat();
   const { send: sendMessageAction } = useSendMessage();
   const [refreshing, setRefreshing] = useState(false);
@@ -919,10 +922,10 @@ export default function ChatScreen() {
   // ── Desktop layout ────────────────────────────────────────────────────────
   if (isDesktop) {
     return (
-      <SafeAreaView style={styles.root} edges={['top']}>
-        <StatusBar style="light" />
+      <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
 
-        <View style={[styles.desktopHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View style={[styles.desktopHeader, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           <View style={[styles.desktopHeaderLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={styles.desktopHeaderIcon}>
               <MaterialIcons name="forum" size={18} color={Colors.primary} />
@@ -976,8 +979,8 @@ export default function ChatScreen() {
 
   // ── Mobile layout ─────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <View style={[styles.mobileHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={[styles.mobileHeaderLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

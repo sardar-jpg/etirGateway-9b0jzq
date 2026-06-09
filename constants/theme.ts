@@ -1,6 +1,7 @@
 // e-tir Gateway Design System
 
-export const Colors = {
+// ── Dark palette (original) ────────────────────────────────────────────────
+export const DarkColors = {
   // Base surfaces
   bg: '#0D1117',
   surface: '#161B22',
@@ -50,7 +51,7 @@ export const Colors = {
   statusInFlight: '#38BDF8',
   statusArrivedHub: '#34D399',
 
-  // Customer portal accent (distinct from success)
+  // Customer portal accent
   customerAccent: '#58A6FF',
 
   // Google OAuth brand colors (stable, intentionally hardcoded)
@@ -58,6 +59,70 @@ export const Colors = {
   googleText: '#1A1A1A',
   googleIcon: '#4285F4',
 };
+
+// ── Light palette ─────────────────────────────────────────────────────────────
+export const LightColors = {
+  // Base surfaces
+  bg: '#F6F8FA',
+  surface: '#FFFFFF',
+  card: '#F0F3F7',
+  cardHover: '#E8EDF4',
+  border: '#D0D7DE',
+  borderSubtle: '#E8EDF4',
+
+  // Brand accent
+  primary: '#0969DA',
+  primaryDark: '#0550AE',
+  primaryLight: '#1F7AE0',
+  primaryGlow: 'rgba(9, 105, 218, 0.1)',
+  primaryBorder: 'rgba(9,105,218,0.3)',
+
+  // Semantic
+  success: '#1A7F37',
+  successBg: 'rgba(26, 127, 55, 0.1)',
+  warning: '#9A6700',
+  warningBg: 'rgba(154, 103, 0, 0.1)',
+  danger: '#CF222E',
+  dangerBg: 'rgba(207, 34, 46, 0.1)',
+  info: '#0969DA',
+  infoBg: 'rgba(9, 105, 218, 0.1)',
+
+  // Text
+  textPrimary: '#1F2328',
+  textSecondary: '#57606A',
+  textMuted: '#8C959F',
+  textInverse: '#FFFFFF',
+
+  // Status colors (adjusted for light backgrounds)
+  statusLoaded: '#0969DA',
+  statusDispatched: '#7C4CAE',
+  statusInTransit: '#0969DA',
+  statusCustomsClearance: '#9A6700',
+  statusCustomsPending: '#C69026',
+  statusArrived: '#1A7F37',
+  statusDetained: '#CF222E',
+
+  // Extended status palette
+  statusBooked: '#0284C7',
+  statusAtPort: '#6366F1',
+  statusVesselDeparted: '#0369A1',
+  statusAtSea: '#0969DA',
+  statusAwaitingFlight: '#0284C7',
+  statusInFlight: '#0284C7',
+  statusArrivedHub: '#15803D',
+
+  // Customer portal accent
+  customerAccent: '#0969DA',
+
+  // Google OAuth brand colors (stable, intentionally hardcoded)
+  googleBg: '#FFFFFF',
+  googleText: '#1A1A1A',
+  googleIcon: '#4285F4',
+};
+
+// ── Static fallback (dark) — used in StyleSheet.create() calls ────────────────
+// Components that use dynamic theming should import from useTheme() instead.
+export const Colors = DarkColors;
 
 export const Spacing = {
   xs: 4,
@@ -100,12 +165,17 @@ export const BorderRadius = {
 
 /**
  * Canonical colors per shipment type — single source of truth.
- * Import and use everywhere instead of repeating inline hex strings.
  */
 export const SHIPMENT_TYPE_COLORS: Record<'Road' | 'Air' | 'Sea', string> = {
-  Road: Colors.primary,   // #2F81F7
-  Air:  Colors.info,      // #58A6FF
-  Sea:  '#58C4DC',        // teal
+  Road: '#2F81F7',
+  Air:  '#58A6FF',
+  Sea:  '#58C4DC',
+};
+
+export const SHIPMENT_TYPE_COLORS_LIGHT: Record<'Road' | 'Air' | 'Sea', string> = {
+  Road: '#0969DA',
+  Air:  '#0284C7',
+  Sea:  '#0891B2',
 };
 
 export const SHIPMENT_TYPE_ICONS: Record<'Road' | 'Air' | 'Sea', string> = {
@@ -135,5 +205,29 @@ export const Shadow = {
     shadowOpacity: 0.6,
     shadowRadius: 24,
     elevation: 20,
+  },
+};
+
+export const ShadowLight = {
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  elevated: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  modal: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 10,
   },
 };

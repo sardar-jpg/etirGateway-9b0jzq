@@ -20,6 +20,8 @@ import { ControlPanel } from '@/components/feature/ControlPanel';
 import { FleetMapModal } from '@/components/feature/FleetMapModal';
 import { SeaMapModal } from '@/components/feature/SeaMapModal';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 function useScreenWidth() {
   const [width, setWidth] = useState(() => Dimensions.get('window').width);
@@ -251,6 +253,7 @@ export default function DashboardScreen() {
   const { totalUnread } = useChat();
   const { drivers } = useDrivers();
   const { t, isRTL } = useLanguage();
+  const { colors, isDark } = useTheme();
   const stats = getStats();
   const screenWidth = useScreenWidth();
   const isDesktop = screenWidth >= 1024;
@@ -305,8 +308,8 @@ export default function DashboardScreen() {
   }, [shipments]);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ── Mobile Header ── */}
       {!isDesktop && (
@@ -320,7 +323,7 @@ export default function DashboardScreen() {
               <Text style={styles.mobileLogoSub}>by MARAS GROUP</Text>
             </View>
           </View>
-          <View style={[styles.mobileHeaderActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View style={[styles.mobileHeaderActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {shipmentsLoading && (
               <View style={styles.livePill}>
                 <View style={styles.livePulseDot} />
@@ -328,6 +331,7 @@ export default function DashboardScreen() {
               </View>
             )}
             <LanguagePicker compact />
+            <ThemeToggle size="sm" />
             <Pressable
               style={[styles.headerIconBtn, styles.headerIconBtnHighlight]}
               onPress={() => setControlPanelOpen(true)}

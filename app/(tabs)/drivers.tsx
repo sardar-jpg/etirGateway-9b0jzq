@@ -11,6 +11,8 @@ import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { useRouter } from 'expo-router';
 import { Driver, TruckClass } from '@/types';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const TRUCK_ICONS: Record<TruckClass, keyof typeof MaterialIcons.glyphMap> = {
   'Refrigerated': 'ac-unit',
@@ -102,6 +104,7 @@ export default function DriversScreen() {
   const { drivers, loading } = useDrivers();
   const [selected, setSelected] = useState<Driver | null>(null);
   const { t, isRTL } = useLanguage();
+  const { colors, isDark } = useTheme();
   const screenWidth = useScreenWidth();
   const isDesktop = screenWidth >= 1024;
 
@@ -111,10 +114,10 @@ export default function DriversScreen() {
   const unverifiedCount = drivers.filter(d => !d.emailVerified).length;
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View>
           <Text style={styles.title}>{t('drivers.title')}</Text>
           <Text style={styles.subtitle}>
@@ -123,6 +126,7 @@ export default function DriversScreen() {
         </View>
         <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           {!isDesktop && <LanguagePicker compact />}
+          {!isDesktop && <ThemeToggle size="sm" />}
           <Pressable style={styles.addBtn} onPress={() => router.push('/') }>
             <MaterialIcons name="person-add" size={16} color="#fff" />
             <Text style={styles.addBtnText}>{t('drivers.inviteDriver')}</Text>

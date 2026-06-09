@@ -35,6 +35,7 @@ import {
   CargoDocument, fetchShipmentDocuments, uploadCargoDocument, deleteCargoDocument,
 } from '@/services/documentService';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { ChatMessage, Driver } from '@/types';
 
 type DriverTab = 'job' | 'chat' | 'notifications' | 'profile' | 'report';
@@ -152,6 +153,7 @@ const infoRowStyles = StyleSheet.create({
 export default function DriverCompanion() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { isDark } = useTheme();
   const driverId = user?.driverId ?? '';
   const { shipments: allShipments, acceptPrice, updateStatus } = useShipments();
   const { myThread, threads, sendMessage, initDriverThread } = useChat(driverId || undefined);
@@ -583,7 +585,7 @@ export default function DriverCompanion() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ── Header ── */}
       <View style={[styles.header, isRtl && styles.rowReverse]}>

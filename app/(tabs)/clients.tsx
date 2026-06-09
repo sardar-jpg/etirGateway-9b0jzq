@@ -15,6 +15,8 @@ import { CreateClientInput } from '@/services/clientService';
 import { supabase } from '@/services/supabaseClient';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 // ── Client Form Modal ──────────────────────────────────────────────────────────
 interface ClientFormProps {
@@ -673,6 +675,7 @@ export default function ClientsScreen() {
   const { shipments } = useShipments();
   const { showAlert } = useAlert();
   const { t, isRTL } = useLanguage();
+  const { colors, isDark } = useTheme();
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -727,8 +730,8 @@ export default function ClientsScreen() {
   const openLink = useCallback((client: Client) => { setLinkingClient(client); }, []);
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="light" />
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]} edges={['top']}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Header */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

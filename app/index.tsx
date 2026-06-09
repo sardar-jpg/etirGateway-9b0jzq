@@ -12,6 +12,7 @@ import { supabase } from '@/services/supabaseClient';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { Colors, FontSize, Spacing, BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { SplashScreen } from '@/components/ui/SplashScreen';
 
 type TabMode = 'admin' | 'driver' | 'customer' | 'register';
@@ -156,6 +157,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { login, loginWithGoogle, verifyOtp, resendVerification, isLoading, user, isPendingApproval } = useAuth();
   const { t } = useLanguage();
+  const { isDark } = useTheme();
   const pathname = usePathname();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -316,7 +318,7 @@ export default function LoginScreen() {
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Subtle grid overlay */}
       <View style={styles.gridOverlay} pointerEvents="none">
