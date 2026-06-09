@@ -388,10 +388,9 @@ const ThreadList = memo(({ threads, activeThreadId, totalUnread, onSelect, onRef
 });
 
 const tlSt = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.surface },
+  root: { flex: 1 },
   header: {
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
     paddingTop: Spacing.md, gap: Spacing.sm,
   },
   headerTop: {
@@ -842,7 +841,7 @@ export default function ChatScreen() {
         )}
 
         {/* ── Input Bar ── */}
-        <View style={styles.inputBar}>
+        <View style={[styles.inputBar, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
           {/* Upload progress bar */}
           {uploading && uploadProgress > 0 && uploadProgress < 100 && (
             <View style={styles.uploadProgressWrap}>

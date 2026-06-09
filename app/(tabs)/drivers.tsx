@@ -70,6 +70,7 @@ const skelStyles = StyleSheet.create({
 
 // ── Stat skeleton ─────────────────────────────────────────────────────────────
 function StatSkeleton() {
+  const { colors } = useTheme();
   const shimmer = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -81,9 +82,9 @@ function StatSkeleton() {
     loop.start();
     return () => loop.stop();
   }, []);
-  const bg = shimmer.interpolate({ inputRange: [0, 1], outputRange: [Colors.surface, Colors.card] });
+  const bg = shimmer.interpolate({ inputRange: [0, 1], outputRange: [colors.surface, colors.card] });
   return (
-    <View style={[styles.statItem, { backgroundColor: Colors.card, gap: 6 }]}>
+    <View style={[styles.statItem, { backgroundColor: colors.card, gap: 6, borderColor: colors.border }]}>
       <Animated.View style={{ width: 28, height: 22, borderRadius: 4, backgroundColor: bg }} />
       <Animated.View style={{ width: 44, height: 10, borderRadius: 4, backgroundColor: bg }} />
     </View>
@@ -119,8 +120,8 @@ export default function DriversScreen() {
 
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View>
-          <Text style={styles.title}>{t('drivers.title')}</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>{t('drivers.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {loading ? t('drivers.loading') : `${drivers.length} ${t('drivers.registeredDrivers')}`}
           </Text>
         </View>
@@ -136,29 +137,29 @@ export default function DriversScreen() {
 
       {/* Stats strip */}
       {loading ? (
-        <View style={styles.statsStrip}>
+        <View style={[styles.statsStrip, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           {[0, 1, 2, 3].map(i => <StatSkeleton key={i} />)}
         </View>
       ) : (
-      <View style={styles.statsStrip}>
-        {[
-          { label: t('drivers.active'), count: activeCount, color: Colors.success, bg: Colors.successBg },
-          { label: t('drivers.idle'), count: idleCount, color: Colors.warning, bg: Colors.warningBg },
-          { label: t('drivers.offline'), count: offlineCount, color: Colors.textMuted, bg: Colors.card },
-          { label: t('drivers.unverified'), count: unverifiedCount, color: Colors.danger, bg: Colors.dangerBg },
-        ].map(stat => (
-          <View key={stat.label} style={[styles.statItem, { backgroundColor: stat.bg }]}>
-            <Text style={[styles.statCount, { color: stat.color }]}>{stat.count}</Text>
-            <Text style={styles.statLabel}>{stat.label}</Text>
-          </View>
-        ))}
-      </View>
+        <View style={[styles.statsStrip, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          {[
+            { label: t('drivers.active'), count: activeCount, color: Colors.success, bg: Colors.successBg },
+            { label: t('drivers.idle'), count: idleCount, color: Colors.warning, bg: Colors.warningBg },
+            { label: t('drivers.offline'), count: offlineCount, color: colors.textMuted, bg: colors.card },
+            { label: t('drivers.unverified'), count: unverifiedCount, color: Colors.danger, bg: Colors.dangerBg },
+          ].map(stat => (
+            <View key={stat.label} style={[styles.statItem, { backgroundColor: stat.bg, borderColor: colors.border }]}>
+              <Text style={[styles.statCount, { color: stat.color }]}>{stat.count}</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
+            </View>
+          ))}
+        </View>
       )}
 
       <View style={isDesktop ? styles.desktopBody : { flex: 1 }}>
         {/* Drivers list */}
         <ScrollView
-          style={isDesktop ? [styles.desktopList, { width: Math.max(300, Math.min(400, screenWidth * 0.34)) }] : styles.scroll}
+          style={isDesktop ? [styles.desktopList, { width: Math.max(300, Math.min(400, screenWidth * 0.34)), borderRightColor: colors.border }] : styles.scroll}
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.list, isDesktop && styles.listDesktop]}>
@@ -169,6 +170,7 @@ export default function DriversScreen() {
                 key={driver.id}
                 style={({ pressed }) => [
                   styles.driverCard,
+                  { backgroundColor: colors.card, borderColor: colors.border },
                   pressed && { opacity: 0.88 },
                   Shadow.card,
                   isDesktop && selected?.id === driver.id && styles.driverCardSelected,
@@ -177,17 +179,18 @@ export default function DriversScreen() {
               >
                 <View style={[styles.driverHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={[styles.avatar, {
-                    borderColor: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : Colors.border,
+                    borderColor: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : colors.border,
                   }]}>
                     <Text style={styles.avatarText}>{driver.avatarInitials}</Text>
                     <View style={[styles.statusDot, {
-                      backgroundColor: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : Colors.textMuted,
+                      backgroundColor: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : colors.textMuted,
+                      borderColor: colors.card,
                     }]} />
                   </View>
 
                   <View style={styles.driverInfo}>
                     <View style={[styles.nameRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                      <Text style={styles.driverName}>{driver.fullName}</Text>
+                      <Text style={[styles.driverName, { color: colors.textPrimary }]}>{driver.fullName}</Text>
                       {!driver.emailVerified && (
                         <View style={styles.unverifiedBadge}>
                           <MaterialIcons name="warning" size={10} color={Colors.warning} />
@@ -195,15 +198,15 @@ export default function DriversScreen() {
                         </View>
                       )}
                     </View>
-                    <Text style={styles.driverPlate}>{driver.plateNumber}</Text>
+                    <Text style={[styles.driverPlate, { color: colors.textMuted }]}>{driver.plateNumber}</Text>
                     <View style={[styles.truckRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                      <MaterialIcons name={TRUCK_ICONS[driver.truckClass] ?? 'local-shipping'} size={12} color={Colors.textMuted} />
-                      <Text style={styles.truckText}>{driver.truckClass}</Text>
+                      <MaterialIcons name={TRUCK_ICONS[driver.truckClass] ?? 'local-shipping'} size={12} color={colors.textMuted} />
+                      <Text style={[styles.truckText, { color: colors.textSecondary }]}>{driver.truckClass}</Text>
                       <View style={[styles.statusPill, {
-                        backgroundColor: driver.status === 'Active' ? Colors.successBg : driver.status === 'Idle' ? Colors.warningBg : Colors.card,
+                        backgroundColor: driver.status === 'Active' ? Colors.successBg : driver.status === 'Idle' ? Colors.warningBg : colors.card,
                       }]}>
                         <Text style={[styles.statusPillText, {
-                          color: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : Colors.textMuted,
+                          color: driver.status === 'Active' ? Colors.success : driver.status === 'Idle' ? Colors.warning : colors.textMuted,
                         }]}>{driver.status}</Text>
                       </View>
                     </View>
@@ -213,20 +216,20 @@ export default function DriversScreen() {
                     <MaterialIcons
                       name={selected?.id === driver.id ? 'expand-less' : 'expand-more'}
                       size={20}
-                      color={Colors.textMuted}
+                      color={colors.textMuted}
                       accessibilityLabel={selected?.id === driver.id ? 'Collapse driver details' : 'Expand driver details'}
                       accessibilityHint="Double-tap to expand driver details"
                     />
                   )}
                   {isDesktop && (
-                    <MaterialIcons name="chevron-right" size={18} color={Colors.textMuted} />
+                    <MaterialIcons name="chevron-right" size={18} color={colors.textMuted} />
                   )}
                 </View>
 
                 {/* Mobile expanded details */}
                 {!isDesktop && selected?.id === driver.id && (
                   <View style={styles.expandedSection}>
-                    <View style={styles.expandedDivider} />
+                    <View style={[styles.expandedDivider, { backgroundColor: colors.border }]} />
                     {[
                       { icon: 'alternate-email' as const, label: t('drivers.username'), value: driver.username },
                       { icon: 'mail-outline' as const, label: t('drivers.emailLabel'), value: driver.email },
@@ -234,9 +237,9 @@ export default function DriversScreen() {
                       { icon: 'verified-user' as const, label: t('drivers.emailVerified'), value: driver.emailVerified ? t('drivers.yes') : t('drivers.noPending') },
                     ].map(row => (
                       <View key={row.label} style={styles.expandedRow}>
-                        <MaterialIcons name={row.icon} size={14} color={Colors.textMuted} />
-                        <Text style={styles.expandedLabel}>{row.label}</Text>
-                        <Text style={[styles.expandedValue, row.label === 'Email Verified' && { color: driver.emailVerified ? Colors.success : Colors.danger }]}>
+                        <MaterialIcons name={row.icon} size={14} color={colors.textMuted} />
+                        <Text style={[styles.expandedLabel, { color: colors.textSecondary }]}>{row.label}</Text>
+                        <Text style={[styles.expandedValue, { color: colors.textPrimary }, row.label === 'Email Verified' && { color: driver.emailVerified ? Colors.success : Colors.danger }]}>
                           {row.value}
                         </Text>
                       </View>
@@ -267,32 +270,32 @@ export default function DriversScreen() {
 
         {/* Desktop detail panel */}
         {isDesktop && (
-          <View style={styles.detailPanel}>
+          <View style={[styles.detailPanel, { backgroundColor: colors.bg }]}>
             {selected ? (
               <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.detailContent}>
                   {/* Driver hero */}
                   <View style={styles.detailHero}>
                     <View style={[styles.detailAvatar, {
-                      borderColor: selected.status === 'Active' ? Colors.success : selected.status === 'Idle' ? Colors.warning : Colors.border,
+                      borderColor: selected.status === 'Active' ? Colors.success : selected.status === 'Idle' ? Colors.warning : colors.border,
                     }]}>
                       <Text style={styles.detailAvatarText}>{selected.avatarInitials}</Text>
                     </View>
-                    <Text style={styles.detailName}>{selected.fullName}</Text>
+                    <Text style={[styles.detailName, { color: colors.textPrimary }]}>{selected.fullName}</Text>
                     <View style={[styles.statusPill, {
-                      backgroundColor: selected.status === 'Active' ? Colors.successBg : selected.status === 'Idle' ? Colors.warningBg : Colors.card,
+                      backgroundColor: selected.status === 'Active' ? Colors.successBg : selected.status === 'Idle' ? Colors.warningBg : colors.card,
                       paddingHorizontal: 14, paddingVertical: 5,
                     }]}>
                       <Text style={[styles.statusPillText, {
                         fontSize: FontSize.sm,
-                        color: selected.status === 'Active' ? Colors.success : selected.status === 'Idle' ? Colors.warning : Colors.textMuted,
+                        color: selected.status === 'Active' ? Colors.success : selected.status === 'Idle' ? Colors.warning : colors.textMuted,
                       }]}>{selected.status}</Text>
                     </View>
                   </View>
 
                   {/* Info rows */}
-                  <View style={styles.detailCard}>
-                    <Text style={styles.detailSectionLabel}>{t('drivers.driverDetails')}</Text>
+                  <View style={[styles.detailCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    <Text style={[styles.detailSectionLabel, { color: colors.textMuted }]}>{t('drivers.driverDetails')}</Text>
                     {[
                       { icon: 'local-shipping' as const, label: t('drivers.plateNumber'), value: selected.plateNumber },
                       { icon: 'directions-car' as const, label: t('drivers.truckClass'), value: selected.truckClass },
@@ -301,13 +304,13 @@ export default function DriversScreen() {
                       { icon: 'phone' as const, label: t('drivers.phoneLabel'), value: selected.phone || '—' },
                       { icon: 'verified-user' as const, label: t('drivers.emailVerified'), value: selected.emailVerified ? t('drivers.verified') : t('drivers.notVerified') },
                     ].map((row, i, arr) => (
-                      <View key={row.label} style={[styles.detailRow, i < arr.length - 1 && styles.detailRowBorder]}>
+                      <View key={row.label} style={[styles.detailRow, i < arr.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.borderSubtle }]}>
                         <View style={styles.detailRowIcon}>
-                          <MaterialIcons name={row.icon} size={15} color={Colors.textMuted} />
+                          <MaterialIcons name={row.icon} size={15} color={colors.textMuted} />
                         </View>
-                        <Text style={styles.detailRowLabel}>{row.label}</Text>
+                        <Text style={[styles.detailRowLabel, { color: colors.textSecondary }]}>{row.label}</Text>
                         <Text style={[
-                          styles.detailRowValue,
+                          styles.detailRowValue, { color: colors.textPrimary },
                           row.label === 'Email Verified' && { color: selected.emailVerified ? Colors.success : Colors.danger },
                         ]}>{row.value}</Text>
                       </View>
@@ -339,9 +342,9 @@ export default function DriversScreen() {
               </ScrollView>
             ) : (
               <View style={styles.detailEmpty}>
-                <MaterialIcons name="person-outline" size={48} color={Colors.border} />
-                <Text style={styles.detailEmptyTitle}>{t('drivers.selectDriver')}</Text>
-                <Text style={styles.detailEmptySub}>{t('drivers.selectDriverSub')}</Text>
+                <MaterialIcons name="person-outline" size={48} color={colors.border} />
+                <Text style={[styles.detailEmptyTitle, { color: colors.textSecondary }]}>{t('drivers.selectDriver')}</Text>
+                <Text style={[styles.detailEmptySub, { color: colors.textMuted }]}>{t('drivers.selectDriverSub')}</Text>
               </View>
             )}
           </View>
@@ -374,6 +377,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,
     gap: Spacing.md,
     borderBottomWidth: 1, borderBottomColor: Colors.border,
+    backgroundColor: Colors.surface,
   },
   statItem: {
     flex: 1, alignItems: 'center', gap: 3,
@@ -413,7 +417,7 @@ const styles = StyleSheet.create({
   },
   driverInfo: { flex: 1, gap: 3 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  driverName: { fontSize: FontSize.base, fontWeight: '600', color: Colors.textPrimary },
+  driverName: { fontSize: FontSize.base, fontWeight: '600', color: Colors.textPrimary, flexShrink: 1 },
   unverifiedBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
     backgroundColor: Colors.warningBg, borderRadius: BorderRadius.full,

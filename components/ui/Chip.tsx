@@ -10,6 +10,7 @@ import React, { useRef, useEffect } from 'react';
 import { Animated, Pressable, View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, FontSize, BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ChipProps {
   label: string;
@@ -38,6 +39,7 @@ export function Chip({
   accessibilityState,
 }: ChipProps) {
   const progress = useRef(new Animated.Value(selected ? 1 : 0)).current;
+  const { colors } = useTheme();
 
   useEffect(() => {
     Animated.timing(progress, {
@@ -47,9 +49,9 @@ export function Chip({
     }).start();
   }, [selected]);
 
-  const bgColor     = progress.interpolate({ inputRange: [0, 1], outputRange: [variant === 'filter' ? Colors.card : Colors.surface, `${color}1E`] });
-  const borderColor = progress.interpolate({ inputRange: [0, 1], outputRange: [Colors.border, color] });
-  const labelColor  = progress.interpolate({ inputRange: [0, 1], outputRange: [Colors.textSecondary, color] });
+  const bgColor     = progress.interpolate({ inputRange: [0, 1], outputRange: [variant === 'filter' ? colors.card : colors.surface, `${color}1E`] });
+  const borderColor = progress.interpolate({ inputRange: [0, 1], outputRange: [colors.border, color] });
+  const labelColor  = progress.interpolate({ inputRange: [0, 1], outputRange: [colors.textSecondary, color] });
 
   const isFilter = variant === 'filter';
 

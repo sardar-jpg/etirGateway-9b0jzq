@@ -734,7 +734,7 @@ export default function ClientsScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View>
           <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]}>{t('clients.title')}</Text>
           <Text style={styles.subtitle}>{clients.length} {t('clients.subtitle')}</Text>
@@ -746,10 +746,10 @@ export default function ClientsScreen() {
       </View>
 
       {/* Search */}
-      <View style={styles.searchWrap}>
+      <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <MaterialIcons name="search" size={17} color={Colors.textMuted} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: colors.textPrimary }]}
           value={search}
           onChangeText={setSearch}
           placeholder={t('clients.searchPlaceholder')}
@@ -764,7 +764,7 @@ export default function ClientsScreen() {
       </View>
 
       {/* Stats bar */}
-      <View style={styles.statsBar}>
+      <View style={[styles.statsBar, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {[
           { icon: 'people' as const,   label: t('clients.total'),     value: clients.length,                        color: Colors.primary },
           { icon: 'business' as const, label: t('clients.companies'), value: clients.filter(c => c.company).length, color: Colors.info },
@@ -809,7 +809,7 @@ export default function ClientsScreen() {
               <Pressable
                 key={client.id}
                 style={({ pressed }) => [
-                  styles.clientCard, { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  styles.clientCard, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.card, borderColor: colors.border },
                   selectedClient?.id === client.id && styles.clientCardSelected,
                   pressed && { opacity: 0.82 },
                 ]}
@@ -822,7 +822,7 @@ export default function ClientsScreen() {
                 </View>
 
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={styles.clientName} numberOfLines={1}>{client.name}</Text>
+                  <Text style={[styles.clientName, { color: colors.textPrimary }]} numberOfLines={1}>{client.name}</Text>
                   {client.company ? (
                     <View style={styles.companyRow}>
                       <MaterialIcons name="business" size={11} color={Colors.textMuted} />

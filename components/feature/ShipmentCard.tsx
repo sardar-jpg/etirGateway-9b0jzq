@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Shipment, ShipmentStatus } from '@/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
   shipment: Shipment;
@@ -45,6 +46,7 @@ function progressColor(ratio: number): string {
 }
 
 export function ShipmentCard({ shipment, onPress, compact = false, selected = false }: Props) {
+  const { colors } = useTheme();
   const checkpoints = shipment.checkpoints ?? [];
   const total      = checkpoints.length;
   const cleared    = checkpoints.filter(c => c.status === 'Cleared').length;
@@ -57,7 +59,8 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
     <Pressable
       style={({ pressed }) => [
         styles.card,
-        selected && styles.cardSelected,
+        { backgroundColor: colors.card, borderColor: colors.border },
+        selected && { borderColor: Colors.primary, backgroundColor: colors.cardHover },
         pressed && styles.pressed,
       ]}
       onPress={() => onPress?.(shipment)}
@@ -72,7 +75,7 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
         <View style={styles.topRow}>
           <View style={styles.tirChip}>
             <MaterialIcons name="confirmation-number" size={11} color={Colors.textMuted} />
-            <Text style={styles.tirNumber} numberOfLines={1}>{shipment.tirNumber}</Text>
+            <Text style={[styles.tirNumber, { color: colors.textSecondary }]} numberOfLines={1}>{shipment.tirNumber}</Text>
           </View>
           <StatusBadge status={shipment.status} size="sm" />
         </View>
@@ -82,7 +85,7 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
           {/* Origin */}
           <View style={styles.routeEndpoint}>
             <View style={[styles.routeDot, { backgroundColor: Colors.primary, borderColor: `${Colors.primary}40` }]} />
-            <Text style={styles.routeCity} numberOfLines={1}>{shipment.origin}</Text>
+            <Text style={[styles.routeCity, { color: colors.textPrimary }]} numberOfLines={1}>{shipment.origin}</Text>
           </View>
 
           {/* Dashed line with truck */}
@@ -100,14 +103,14 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
 
           {/* Destination */}
           <View style={[styles.routeEndpoint, styles.routeEndpointRight]}>
-            <Text style={[styles.routeCity, styles.routeCityRight]} numberOfLines={1}>{shipment.destination}</Text>
+            <Text style={[styles.routeCity, styles.routeCityRight, { color: colors.textPrimary }]} numberOfLines={1}>{shipment.destination}</Text>
             <View style={[styles.routeDot, { backgroundColor: Colors.success, borderColor: `${Colors.success}40` }]} />
           </View>
         </View>
 
         {/* ── Mini checkpoint progress bar ── */}
         <View style={styles.progressSection}>
-          <View style={styles.progressTrack}>
+          <View style={[styles.progressTrack, { backgroundColor: colors.surface }]}>
             <View style={[styles.progressFill, { width: `${pct}%`, backgroundColor: barColor }]} />
             {/* Checkpoint ticks — rendered at fixed intervals using flex */}
           </View>
@@ -123,7 +126,7 @@ export function ShipmentCard({ shipment, onPress, compact = false, selected = fa
 
         {/* ── Footer meta ── */}
         {!compact && (
-          <View style={styles.footer}>
+          <View style={[styles.footer, { borderTopColor: colors.borderSubtle }]}>
             <View style={styles.metaItem}>
               <MaterialIcons name="person" size={11} color={Colors.textMuted} />
               <Text style={styles.metaText} numberOfLines={1}>{shipment.driverName}</Text>

@@ -342,7 +342,7 @@ export default function ShipmentsScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ══════════ HEADER ══════════ */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.headerLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={styles.headerIconBox}>
             <MaterialIcons name="local-shipping" size={16} color={Colors.primary} />
@@ -390,7 +390,7 @@ export default function ShipmentsScreen() {
       ) : null}
 
       {/* ══════════ SUMMARY BAR ══════════ */}
-      <View style={[styles.summaryBar, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.summaryBar, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         {[
           { label: 'Active',   value: summary.active,   color: Colors.primary,  icon: 'directions-car' as const },
           { label: 'Customs',  value: summary.customs,  color: Colors.warning,  icon: 'verified-user' as const },
@@ -408,19 +408,19 @@ export default function ShipmentsScreen() {
         ))}
       </View>
 
-      <View style={styles.body}>
+      <View style={[styles.body, { backgroundColor: colors.bg }]}>
         {/* ══════════ LIST PANEL ══════════ */}
         <View style={[styles.listPanel, isDesktop && selectedShipment && styles.listPanelNarrow]}>
 
           {/* ── Search ── */}
-          <View style={styles.searchWrap}>
-            <MaterialIcons name="search" size={17} color={Colors.textMuted} />
+          <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <MaterialIcons name="search" size={17} color={colors.textMuted} />
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: colors.textPrimary }]}
               value={search}
               onChangeText={setSearch}
               placeholder={t('shipments.searchPlaceholder')}
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
             />
             {search ? (
@@ -431,7 +431,7 @@ export default function ShipmentsScreen() {
           </View>
 
           {/* ── Type filter row ── */}
-          <View style={[styles.typeRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.typeRow, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.bg }]}>
             <View style={styles.typeRowLabel}>
               <MaterialIcons name="filter-list" size={12} color={Colors.textMuted} />
               <Text style={styles.typeRowLabelText}>TYPE</Text>
@@ -454,7 +454,7 @@ export default function ShipmentsScreen() {
           </View>
 
           {/* ── Status filter chips + sort ── */}
-          <View style={[styles.filterRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.filterRow, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.bg }]}>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -522,7 +522,7 @@ export default function ShipmentsScreen() {
           )}
 
           {/* ── Results bar ── */}
-          <View style={styles.resultsBar}>
+          <View style={[styles.resultsBar, { backgroundColor: colors.bg }]}>
             <View style={styles.resultsLeft}>
               <Text style={styles.resultsCount}>{filtered.length}</Text>
               <Text style={styles.resultsLabel}>{filtered.length === 1 ? t('customer.resultsCount') : t('customer.resultsCountPlural')}</Text>
@@ -598,7 +598,7 @@ export default function ShipmentsScreen() {
                         selected={isDesktop && selectedShipment?.id === s.id}
                       />
                       <Pressable
-                        style={({ pressed }) => [styles.quickStatusRow, pressed && { backgroundColor: Colors.cardHover }]}
+                        style={({ pressed }) => [styles.quickStatusRow, { backgroundColor: colors.card, borderTopColor: colors.borderSubtle }, pressed && { backgroundColor: colors.cardHover }]}
                         onPress={() => setQuickStatusShipment(s)}
                       >
                         <MaterialIcons name="update" size={11} color={Colors.primary} />
@@ -639,7 +639,7 @@ export default function ShipmentsScreen() {
 
         {/* ══════════ DETAIL PANEL (desktop) ══════════ */}
         {isDesktop && (
-          <View style={styles.detailPanel}>
+          <View style={[styles.detailPanel, { backgroundColor: colors.bg }]}>
             {selectedShipment ? (
               (() => {
                 const Detail = getLazyShipmentDetail();
@@ -699,13 +699,13 @@ export default function ShipmentsScreen() {
             style={{ width: '100%', maxWidth: 520, alignSelf: 'center' }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
-            <Pressable style={styles.qsSheet} onPress={e => e.stopPropagation()}>
+            <Pressable style={[styles.qsSheet, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={e => e.stopPropagation()}>
 
             {/* Sheet handle */}
             <View style={styles.sheetHandle} />
 
             {/* Header */}
-            <View style={styles.qsHeader}>
+            <View style={[styles.qsHeader, { borderBottomColor: colors.border }]}>
               <View style={styles.qsHeaderLeft}>
                 <View style={styles.qsHeaderIcon}>
                   <MaterialIcons name="update" size={15} color={Colors.primary} />
@@ -729,7 +729,7 @@ export default function ShipmentsScreen() {
             {quickStatusShipment ? (() => {
                 const cur = findStatusOption(quickStatusShipment.status);
                 return (
-                  <View style={[styles.qsCurrentStrip, { borderColor: `${cur.color}30` }]}>
+                  <View style={[styles.qsCurrentStrip, { backgroundColor: colors.card, borderColor: `${cur.color}30`, borderBottomColor: colors.border }]}>
                     <Text style={styles.qsCurrentStripLabel}>CURRENT</Text>
                     <View style={[styles.qsCurrentBadge, { backgroundColor: `${cur.color}18`, borderColor: `${cur.color}40` }]}>
                       <MaterialIcons name={cur.icon} size={12} color={cur.color} />
@@ -788,8 +788,8 @@ export default function ShipmentsScreen() {
                 );
               })()}
 
-            <View style={styles.qsFooter}>
-              <Pressable style={styles.qsCancelBtn} onPress={() => setQuickStatusShipment(null)} disabled={quickStatusUpdating}>
+            <View style={[styles.qsFooter, { borderTopColor: colors.border }]}>
+              <Pressable style={[styles.qsCancelBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setQuickStatusShipment(null)} disabled={quickStatusUpdating}>
                 <Text style={styles.qsCancelText}>{t('detail.cancel')}</Text>
               </Pressable>
             </View>
@@ -828,6 +828,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: FontSize.xl, fontWeight: '700', color: Colors.textPrimary },
   headerSub:   { fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2 },
+  headerBg: { backgroundColor: Colors.surface, borderBottomColor: Colors.border },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
@@ -861,7 +862,7 @@ const styles = StyleSheet.create({
   },
   summaryItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5 },
   summaryValue: { fontSize: FontSize.base, fontWeight: '800' },
-  summaryLabel: { fontSize: 10, color: Colors.textMuted, fontWeight: '600' },
+  summaryLabel: { fontSize: 10, color: Colors.textSecondary, fontWeight: '600' },
   summarySep: { width: 1, height: 20, backgroundColor: Colors.borderSubtle },
 
   body: { flex: 1, flexDirection: 'row' },
