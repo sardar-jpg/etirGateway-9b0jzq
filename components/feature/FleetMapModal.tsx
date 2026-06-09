@@ -311,7 +311,7 @@ export function FleetMapModal({
 
   const handleShipmentRowPress = useCallback((s: Shipment) => {
     if (hasCoords(s)) {
-      setFocusShipment(prev => prev?.id === s.id ? null : s);
+      setFocusShipment(_prev => _prev?.id === s.id ? null : s);
     }
   }, []);
 

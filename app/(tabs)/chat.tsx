@@ -905,7 +905,7 @@ export default function ChatScreen() {
 
             <Pressable
               style={[styles.sendBtn, (!message.trim() && !pendingAttachment) && styles.sendBtnDisabled]}
-              onPress={handleSend}
+              onPress={() => { void handleSend(); }}
               disabled={!message.trim() && !pendingAttachment}
             >
               <MaterialIcons name="send" size={18} color="#fff" />

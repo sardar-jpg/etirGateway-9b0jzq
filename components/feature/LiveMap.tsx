@@ -126,7 +126,7 @@ class MapErrorBoundary extends Component<{ children: React.ReactNode }, { hasErr
 }
 
 function MapContent({
-  shipments,
+  shipments: _shipments,
   focusShipment,
   filteredShipments,
   selectedShipment,

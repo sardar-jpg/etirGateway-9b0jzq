@@ -825,7 +825,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
                     showsVerticalScrollIndicator={false}
                     nestedScrollEnabled
                   >
-                    {[...routeHistory].reverse().slice(0, 20).map((pt, i, _arr) => {
+                    {[...routeHistory].reverse().slice(0, 20).map((pt, i, slicedArr) => {
                       const isLatest = i === 0;
                       const time = new Date(pt.recordedAt);
                       return (
@@ -836,7 +836,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
                               styles.historyTimelineDot,
                               isLatest && styles.historyTimelineDotActive,
                             ]} />
-                            {i < arr.length - 1 && <View style={styles.historyTimelineLine} />}
+                            {i < slicedArr.length - 1 && <View style={styles.historyTimelineLine} />}
                           </View>
 
                           <View style={styles.historyRowContent}>

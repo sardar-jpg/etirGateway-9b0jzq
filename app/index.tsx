@@ -154,7 +154,7 @@ const otpSt = StyleSheet.create({
 // ── Main Screen ───────────────────────────────────────────────────────────────
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, loginWithGoogle, register, verifyOtp, resendVerification, isLoading, user, isPendingApproval } = useAuth();
+  const { login, loginWithGoogle, verifyOtp, resendVerification, isLoading, user, isPendingApproval } = useAuth();
   const { t } = useLanguage();
   const pathname = usePathname();
 
@@ -250,12 +250,6 @@ export default function LoginScreen() {
       setError(res.error ?? t('auth.fillCredentials'));
     }
   };
-
-  const _handleRegister = async () => {
-    setError('');
-    setError(t('auth.fillAll'));
-  };
-  void _handleRegister;
 
   const handleOtpDigit = (index: number, value: string) => {
     const clean = value.replace(/[^0-9]/g, '').slice(-1);
