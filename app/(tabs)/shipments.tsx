@@ -341,39 +341,53 @@ export default function ShipmentsScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* ══════════ HEADER ══════════ */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.headerLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={styles.headerIconBox}>
-            <MaterialIcons name="local-shipping" size={16} color={Colors.primary} />
-          </View>
-          <View>
-            <Text style={styles.headerTitle}>{t('shipments.title')}</Text>
-            <Text style={styles.headerSub}>{shipments.length} {t('shipments.totalManifests')}</Text>
-          </View>
+      <View style={[styles.headerWrap, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        {/* Gradient top-border accent */}
+        <View style={styles.headerGradientBar} pointerEvents="none">
+          <View style={[styles.headerGradientSegment, { backgroundColor: Colors.primary, flex: 3 }]} />
+          <View style={[styles.headerGradientSegment, { backgroundColor: SHIPMENT_TYPE_COLORS.Air, flex: 1.5 }]} />
+          <View style={[styles.headerGradientSegment, { backgroundColor: SHIPMENT_TYPE_COLORS.Sea, flex: 1.5 }]} />
         </View>
-        <View style={[styles.headerRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {!isDesktop && <LanguagePicker compact />}
-          {seaShipmentCount > 0 && (
+
+        <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.headerLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={styles.headerIconBox}>
+              <MaterialIcons name="local-shipping" size={17} color={Colors.primary} />
+            </View>
+            <View>
+              <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('shipments.title')}</Text>
+              <View style={styles.headerSubRow}>
+                <View style={styles.liveDot} />
+                <Text style={[styles.headerSub, { color: colors.textSecondary }]}>
+                  {shipments.length} {t('shipments.totalManifests')} · LIVE
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={[styles.headerRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {!isDesktop && <LanguagePicker compact />}
+            {seaShipmentCount > 0 && (
+              <Pressable
+                style={({ pressed }) => [styles.seaMapBtn, pressed && { opacity: 0.85 }]}
+                onPress={() => setSeaMapOpen(true)}
+              >
+                <MaterialIcons name="directions-boat" size={14} color={SHIPMENT_TYPE_COLORS.Sea} />
+                {!isDesktop && <Text style={styles.seaMapBtnText}>Sea</Text>}
+                {seaShipmentCount > 0 && (
+                  <View style={styles.seaMapBadge}>
+                    <Text style={styles.seaMapBadgeText}>{seaShipmentCount}</Text>
+                  </View>
+                )}
+              </Pressable>
+            )}
             <Pressable
-              style={({ pressed }) => [styles.seaMapBtn, pressed && { opacity: 0.85 }]}
-              onPress={() => setSeaMapOpen(true)}
+              style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.85 }]}
+              onPress={() => setShowAddModal(true)}
             >
-              <MaterialIcons name="directions-boat" size={14} color={SHIPMENT_TYPE_COLORS.Sea} />
-              {!isDesktop && <Text style={styles.seaMapBtnText}>Sea</Text>}
-              {seaShipmentCount > 0 && (
-                <View style={styles.seaMapBadge}>
-                  <Text style={styles.seaMapBadgeText}>{seaShipmentCount}</Text>
-                </View>
-              )}
+              <MaterialIcons name="add" size={16} color="#fff" />
+              <Text style={styles.addBtnText}>{t('shipments.newShipment')}</Text>
             </Pressable>
-          )}
-          <Pressable
-            style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.85 }]}
-            onPress={() => setShowAddModal(true)}
-          >
-            <MaterialIcons name="add" size={16} color="#fff" />
-            <Text style={styles.addBtnText}>{t('shipments.newShipment')}</Text>
-          </Pressable>
+          </View>
         </View>
       </View>
 
@@ -390,18 +404,20 @@ export default function ShipmentsScreen() {
       {/* ══════════ SUMMARY BAR ══════════ */}
       <View style={[styles.summaryBar, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         {[
-          { label: 'Active',   value: summary.active,   color: Colors.primary,  icon: 'directions-car' as const },
-          { label: 'Customs',  value: summary.customs,  color: Colors.warning,  icon: 'verified-user' as const },
-          { label: 'Arrived',  value: summary.arrived,  color: Colors.success,  icon: 'check-circle' as const },
-          { label: 'Detained', value: summary.detained, color: Colors.danger,   icon: 'block' as const },
+          { label: 'Active',   value: summary.active,   color: Colors.primary,  icon: 'directions-car' as const,  bg: Colors.primaryGlow },
+          { label: 'Customs',  value: summary.customs,  color: Colors.warning,  icon: 'verified-user' as const,   bg: Colors.warningBg },
+          { label: 'Arrived',  value: summary.arrived,  color: Colors.success,  icon: 'check-circle' as const,    bg: Colors.successBg },
+          { label: 'Detained', value: summary.detained, color: Colors.danger,   icon: 'block' as const,           bg: Colors.dangerBg },
         ].map((item, i, arr) => (
           <React.Fragment key={item.label}>
             <View style={styles.summaryItem}>
-              <MaterialIcons name={item.icon} size={13} color={item.color} />
+              <View style={[styles.summaryIconWrap, { backgroundColor: item.bg, borderColor: `${item.color}30` }]}>
+                <MaterialIcons name={item.icon} size={14} color={item.color} />
+              </View>
               <Text style={[styles.summaryValue, { color: item.color }]}>{item.value}</Text>
-              <Text style={styles.summaryLabel}>{item.label}</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{item.label}</Text>
             </View>
-            {i < arr.length - 1 && <View style={styles.summarySep} />}
+            {i < arr.length - 1 && <View style={[styles.summarySep, { backgroundColor: colors.borderSubtle }]} />}
           </React.Fragment>
         ))}
       </View>
@@ -723,15 +739,28 @@ export default function ShipmentsScreen() {
               </Pressable>
             </View>
 
-            {/* Current status strip — safe via findStatusOption */}
+            {/* Current status strip — polished with type badge */}
             {quickStatusShipment ? (() => {
                 const cur = findStatusOption(quickStatusShipment.status);
+                const tc  = SHIPMENT_TYPE_COLORS[quickStatusShipment.shipmentType as 'Road' | 'Air' | 'Sea'] ?? SHIPMENT_TYPE_COLORS.Road;
                 return (
-                  <View style={[styles.qsCurrentStrip, { backgroundColor: colors.card, borderColor: `${cur.color}30`, borderBottomColor: colors.border }]}>
-                    <Text style={styles.qsCurrentStripLabel}>CURRENT</Text>
-                    <View style={[styles.qsCurrentBadge, { backgroundColor: `${cur.color}18`, borderColor: `${cur.color}40` }]}>
-                      <MaterialIcons name={cur.icon} size={12} color={cur.color} />
-                      <Text style={[styles.qsCurrentBadgeText, { color: cur.color }]}>{quickStatusShipment.status}</Text>
+                  <View style={[styles.qsCurrentStrip, { backgroundColor: `${cur.color}08`, borderBottomColor: colors.border }]}>
+                    <View style={[styles.qsCurrentStripAccent, { backgroundColor: cur.color }]} />
+                    <View style={styles.qsCurrentStripInner}>
+                      <Text style={[styles.qsCurrentStripLabel, { color: colors.textMuted }]}>CURRENT STATUS</Text>
+                      <View style={styles.qsCurrentStripRow}>
+                        <View style={[styles.qsCurrentBadge, { backgroundColor: `${cur.color}18`, borderColor: `${cur.color}40` }]}>
+                          <MaterialIcons name={cur.icon} size={12} color={cur.color} />
+                          <Text style={[styles.qsCurrentBadgeText, { color: cur.color }]}>{quickStatusShipment.status}</Text>
+                        </View>
+                        <View style={[styles.qsTypeBadge, { backgroundColor: `${tc}15`, borderColor: `${tc}35` }]}>
+                          <MaterialIcons
+                            name={quickStatusShipment.shipmentType === 'Air' ? 'flight' : quickStatusShipment.shipmentType === 'Sea' ? 'directions-boat' : 'local-shipping'}
+                            size={10} color={tc}
+                          />
+                          <Text style={[styles.qsTypeBadgeText, { color: tc }]}>{quickStatusShipment.shipmentType ?? 'Road'}</Text>
+                        </View>
+                      </View>
                     </View>
                   </View>
                 );
@@ -749,9 +778,10 @@ export default function ShipmentsScreen() {
                           key={opt.value}
                           style={({ pressed }) => [
                             styles.qsOption,
-                            i < STATUS_OPTIONS.length - 1 && styles.qsOptionBorder,
-                            isCurrent  && { backgroundColor: `${opt.color}08` },
-                            pressed && !isCurrent && !quickStatusUpdating && { backgroundColor: `${opt.color}08` },
+                            { backgroundColor: colors.surface },
+                            i < STATUS_OPTIONS.length - 1 && [styles.qsOptionBorder, { borderBottomColor: colors.borderSubtle }],
+                            isCurrent  && { backgroundColor: `${opt.color}0D` },
+                            pressed && !isCurrent && !quickStatusUpdating && { backgroundColor: colors.card },
                           ]}
                           onPress={async () => {
                             if (isCurrent || !quickStatusShipment || quickStatusUpdating) return;
@@ -812,21 +842,34 @@ const styles = StyleSheet.create({
   pollErrorText: { flex: 1, fontSize: FontSize.xs, color: Colors.warning, fontWeight: '600' },
 
   // ── Header ──────────────────────────────────────────────────────────────────
+  headerWrap: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.surface,
+    overflow: 'hidden',
+  },
+  headerGradientBar: {
+    flexDirection: 'row',
+    height: 2.5,
+    width: '100%',
+  },
+  headerGradientSegment: {
+    height: 2.5,
+  },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   headerIconBox: {
-    width: 36, height: 36, borderRadius: BorderRadius.md,
-    backgroundColor: Colors.primaryGlow, borderWidth: 1, borderColor: 'rgba(47,129,247,0.3)',
+    width: 40, height: 40, borderRadius: BorderRadius.md,
+    backgroundColor: Colors.primaryGlow, borderWidth: 1.5, borderColor: Colors.primaryBorder,
     alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: { fontSize: FontSize.xl, fontWeight: '700', color: Colors.textPrimary },
-  headerSub:   { fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2 },
-  headerBg: { backgroundColor: Colors.surface, borderBottomColor: Colors.border },
+  headerSubRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
+  liveDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.success },
+  headerSub:   { fontSize: FontSize.xs, color: Colors.textSecondary },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
@@ -855,13 +898,19 @@ const styles = StyleSheet.create({
   summaryBar: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.surface,
-    paddingVertical: 10, paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md, paddingHorizontal: Spacing.xl,
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
-  summaryItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5 },
-  summaryValue: { fontSize: FontSize.base, fontWeight: '800' },
-  summaryLabel: { fontSize: 10, color: Colors.textSecondary, fontWeight: '600' },
-  summarySep: { width: 1, height: 20, backgroundColor: Colors.borderSubtle },
+  summaryItem: { flex: 1, alignItems: 'center', gap: 4 },
+  summaryIconWrap: {
+    width: 32, height: 32, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1,
+  },
+  summaryValue: { fontSize: FontSize.lg, fontWeight: '800' },
+  summaryLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 0.4 },
+  summarySep: { width: 1, height: 36, backgroundColor: Colors.borderSubtle },
+  headerBg: { backgroundColor: Colors.surface, borderBottomColor: Colors.border },
 
   body: { flex: 1, flexDirection: 'row' },
   listPanel:       { flex: 1 },
@@ -1043,17 +1092,27 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.border,
   },
   qsCurrentStrip: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    paddingHorizontal: Spacing.xl, paddingVertical: 10,
-    backgroundColor: Colors.card, borderBottomWidth: 1, borderBottomColor: Colors.border,
+    flexDirection: 'row', alignItems: 'stretch',
+    borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
-  qsCurrentStripLabel: { fontSize: 9, fontWeight: '700', color: Colors.textMuted, letterSpacing: 1 },
+  qsCurrentStripAccent: { width: 3 },
+  qsCurrentStripInner: {
+    flex: 1, paddingHorizontal: Spacing.xl, paddingVertical: 12, gap: 6,
+  },
+  qsCurrentStripLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 1.1 },
+  qsCurrentStripRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   qsCurrentBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    borderRadius: BorderRadius.full, paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: BorderRadius.full, paddingHorizontal: 10, paddingVertical: 5,
     borderWidth: 1,
   },
-  qsCurrentBadgeText: { fontSize: FontSize.xs, fontWeight: '700' },
+  qsCurrentBadgeText: { fontSize: FontSize.sm, fontWeight: '700' },
+  qsTypeBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    borderRadius: BorderRadius.full, paddingHorizontal: 8, paddingVertical: 4,
+    borderWidth: 1,
+  },
+  qsTypeBadgeText: { fontSize: 9, fontWeight: '700' },
   qsOption: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
     paddingHorizontal: Spacing.xl, paddingVertical: 13, position: 'relative',
