@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useShipments } from '@/hooks/useShipments';
+import { useTheme } from '@/hooks/useTheme';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useClients } from '@/hooks/useClients';
 import { Driver, Client, ContainerEntry, AdditionalDriver } from '@/types';
@@ -734,6 +735,7 @@ const sucSt = StyleSheet.create({
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export function AddShipmentModal({ visible, onClose }: Props) {
+  const { colors } = useTheme();
   const { addShipment } = useShipments();
   const { drivers } = useDrivers();
   const { clients } = useClients();
@@ -917,10 +919,10 @@ export function AddShipmentModal({ visible, onClose }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
-      <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={[styles.root, { backgroundColor: colors.bg }]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
         {/* ── Header ── */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           <View style={styles.headerLeft}>
             <View style={styles.headerIcon}>
               <MaterialIcons name={showSuccess ? 'check-circle' : 'add-box'} size={20} color={showSuccess ? Colors.success : Colors.primary} />
@@ -936,7 +938,7 @@ export function AddShipmentModal({ visible, onClose }: Props) {
               </Text>
             </View>
           </View>
-          <Pressable style={styles.closeBtn} onPress={handleClose}>
+          <Pressable style={[styles.closeBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleClose}>
             <MaterialIcons name="close" size={18} color={Colors.textSecondary} />
           </Pressable>
         </View>

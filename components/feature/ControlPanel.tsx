@@ -19,6 +19,7 @@ import { updateDriverStatus } from '@/services/driverService';
 import { fetchAppConfig, compareVersions } from '@/services/versionService';
 import { getSupabaseClient } from '@/template';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { ShipmentStatus } from '@/types';
 
 type PanelTab = 'operations' | 'broadcast' | 'fleet' | 'alerts' | 'config' | 'approvals';
@@ -1142,6 +1143,7 @@ const cfgSt = StyleSheet.create({
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export function ControlPanel({ visible, onClose }: ControlPanelProps) {
+  const { colors } = useTheme();
   const { shipments, updateStatus, getStats } = useShipments();
   const { drivers, refresh: refreshDrivers } = useDrivers();
   const { showAlert } = useAlert();
@@ -1294,16 +1296,16 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
       statusBarTranslucent
     >
       <View style={styles.overlay}>
-        <View style={styles.panel}>
+        <View style={[styles.panel, { backgroundColor: colors.bg, borderColor: colors.border }]}>
 
           {/* ── Header ──────────────────────────────────────────────── */}
-          <View style={styles.header}>
+          <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
             <View style={styles.headerLeft}>
               <View style={styles.headerIconWrap}>
                 <MaterialIcons name="tune" size={18} color={Colors.primary} />
               </View>
               <View>
-                <Text style={styles.headerTitle}>Admin Control Panel</Text>
+                <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Admin Control Panel</Text>
                 <Text style={styles.headerSub}>MARAS Group · e-tir Gateway</Text>
               </View>
             </View>
@@ -1331,13 +1333,13 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
               </View>
             </View>
 
-            <Pressable style={styles.closeBtn} onPress={onClose} hitSlop={8}>
+            <Pressable style={[styles.closeBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={onClose} hitSlop={8}>
               <MaterialIcons name="close" size={20} color={Colors.textSecondary} />
             </Pressable>
           </View>
 
           {/* ── Tab bar ─────────────────────────────────────────────── */}
-          <View style={styles.tabBar}>
+          <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
             <TabBtn icon="edit-note"    label="Operations"    active={activeTab === 'operations'} onPress={() => setActiveTab('operations')} />
             <TabBtn icon="campaign"     label="Broadcast"     active={activeTab === 'broadcast'}  onPress={() => setActiveTab('broadcast')} />
             <TabBtn icon="people"       label="Fleet Monitor" active={activeTab === 'fleet'}      onPress={() => setActiveTab('fleet')} />
@@ -1353,17 +1355,17 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
             {activeTab === 'operations' && (
               <View style={styles.twoCol}>
                 {/* Left — shipment selector */}
-                <View style={styles.colLeft}>
+                <View style={[styles.colLeft, { borderRightColor: colors.border }]}>
                   <SectionTitle
                     title="Select Shipments"
                     subtitle={`${selectedShipments.size} of ${filteredShipments.length} selected`}
                   />
 
                   <View style={styles.searchRow}>
-                    <View style={styles.searchBox}>
+                    <View style={[styles.searchBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
                       <MaterialIcons name="search" size={15} color={Colors.textMuted} />
                       <TextInput
-                        style={styles.searchInput}
+                        style={[styles.searchInput, { color: colors.textPrimary }]}
                         value={opSearch}
                         onChangeText={setOpSearch}
                         placeholder="Filter by TIR or driver..."
@@ -1388,7 +1390,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                       return (
                         <Pressable
                           key={s.id}
-                          style={[styles.opShipmentRow, sel && styles.opShipmentRowSelected]}
+                          style={[styles.opShipmentRow, sel && styles.opShipmentRowSelected, !sel && { backgroundColor: 'transparent' }]}
                           onPress={() => toggleShipment(s.id)}
                         >
                           <View style={[styles.opCheckbox, sel && { backgroundColor: Colors.primary, borderColor: Colors.primary }]}>
@@ -1396,7 +1398,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                           </View>
                           <View style={[styles.opAccent, { backgroundColor: accent }]} />
                           <View style={styles.opShipmentInfo}>
-                            <Text style={styles.opTirNum}>{s.tirNumber}</Text>
+                            <Text style={[styles.opTirNum, { color: colors.textPrimary }]}>{s.tirNumber}</Text>
                             <Text style={styles.opDriverName} numberOfLines={1}>{s.driverName}</Text>
                           </View>
                           <View style={[styles.opStatusChip, { backgroundColor: `${accent}18`, borderColor: `${accent}30` }]}>
@@ -1413,7 +1415,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                 <View style={styles.colRight}>
                   <SectionTitle title="Bulk Action" subtitle="Apply to selected shipments" />
 
-                  <View style={styles.actionCard}>
+                  <View style={[styles.actionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                     <View style={styles.actionCardHeader}>
                       <MaterialIcons name="update" size={16} color={Colors.primary} />
                       <Text style={styles.actionCardTitle}>Set Status</Text>
@@ -1468,7 +1470,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                     </Pressable>
                   </View>
 
-                  <View style={styles.actionCard}>
+                  <View style={[styles.actionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                     <View style={styles.actionCardHeader}>
                       <MaterialIcons name="bar-chart" size={16} color={Colors.primary} />
                       <Text style={styles.actionCardTitle}>Status Breakdown</Text>
@@ -1499,7 +1501,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
             {/* ══ BROADCAST ══════════════════════════════════════════ */}
             {activeTab === 'broadcast' && (
               <View style={styles.centeredTab}>
-                <View style={styles.broadcastCard}>
+                <View style={[styles.broadcastCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   <View style={styles.actionCardHeader}>
                     <MaterialIcons name="campaign" size={18} color={Colors.primary} />
                     <Text style={styles.actionCardTitle}>Push Broadcast</Text>
@@ -1527,7 +1529,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                   <View style={styles.bcField}>
                     <Text style={styles.bcFieldLabel}>Notification Title</Text>
                     <TextInput
-                      style={styles.bcInput}
+                      style={[styles.bcInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
                       value={bcTitle}
                       onChangeText={setBcTitle}
                       placeholder="e.g. Customs checkpoint open at Habur"
@@ -1539,7 +1541,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                   <View style={styles.bcField}>
                     <Text style={styles.bcFieldLabel}>Message Body</Text>
                     <TextInput
-                      style={[styles.bcInput, { minHeight: 90, textAlignVertical: 'top', paddingTop: 12 }]}
+                      style={[styles.bcInput, { minHeight: 90, textAlignVertical: 'top', paddingTop: 12, backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
                       value={bcBody}
                       onChangeText={setBcBody}
                       placeholder="Enter the message to send to drivers and/or admins..."
@@ -1619,7 +1621,7 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                       const isLoading = driverStatusLoading.has(driver.id);
                       const assignedShipment = shipments.find(s => s.driverId === driver.id);
                       return (
-                        <View key={driver.id} style={styles.driverCard}>
+                        <View key={driver.id} style={[styles.driverCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                           <View style={styles.driverCardHeader}>
                             <View style={styles.driverAvatarWrap}>
                               <View style={styles.driverAvatar}>
@@ -1628,8 +1630,8 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                               <View style={[styles.driverStatusDot, { backgroundColor: statusColor }]} />
                             </View>
                             <View style={{ flex: 1 }}>
-                              <Text style={styles.driverName} numberOfLines={1}>{driver.fullName}</Text>
-                              <Text style={styles.driverPlate}>{driver.plateNumber}</Text>
+                              <Text style={[styles.driverName, { color: colors.textPrimary }]} numberOfLines={1}>{driver.fullName}</Text>
+                              <Text style={[styles.driverPlate, { color: colors.textMuted }]}>{driver.plateNumber}</Text>
                             </View>
                             <View style={[styles.driverStatusBadge, { backgroundColor: `${statusColor}15`, borderColor: `${statusColor}30` }]}>
                               <Text style={[styles.driverStatusText, { color: statusColor }]}>{driver.status}</Text>
@@ -1715,14 +1717,14 @@ export function ControlPanel({ visible, onClose }: ControlPanelProps) {
                         const isDetained = s.status === 'Detained';
                         const accent = isDetained ? Colors.danger : Colors.warning;
                         return (
-                          <View key={s.id} style={[styles.alertItem, { borderLeftColor: accent }]}>
+                          <View key={s.id} style={[styles.alertItem, { backgroundColor: colors.card, borderColor: colors.border, borderLeftColor: accent }]}>
                             <View style={styles.alertItemTop}>
                               <View style={[styles.alertIcon, { backgroundColor: `${accent}18` }]}>
                                 <MaterialIcons name={isDetained ? 'block' : 'pending-actions'} size={18} color={accent} />
                               </View>
                               <View style={{ flex: 1 }}>
-                                <Text style={styles.alertTirNum}>{s.tirNumber}</Text>
-                                <Text style={styles.alertDriver}>{s.driverName} · {s.plateNumber}</Text>
+                                <Text style={[styles.alertTirNum, { color: colors.textPrimary }]}>{s.tirNumber}</Text>
+                                <Text style={[styles.alertDriver, { color: colors.textMuted }]}>{s.driverName} · {s.plateNumber}</Text>
                               </View>
                               <View style={[styles.alertStatusBadge, { backgroundColor: `${accent}18`, borderColor: `${accent}35` }]}>
                                 <Text style={[styles.alertStatusText, { color: accent }]}>{s.status}</Text>

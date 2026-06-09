@@ -42,6 +42,7 @@ import { supabase } from '@/services/supabaseClient';
 import { fetchLocationHistory, LocationPoint } from '@/services/locationHistoryService';
 import { ShipmentChat } from '@/components/feature/ShipmentChat';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 const SEA = SHIPMENT_TYPE_COLORS.Sea;
 
 type StatusOption = { value: ShipmentStatus; label: string; color: string; icon: keyof typeof MaterialIcons.glyphMap };
@@ -106,6 +107,7 @@ function InfoRow({ label, value, mono }: { label: string; value: string; mono?: 
 }
 
 export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssign, onETAChange }: Props) {
+  const { colors } = useTheme();
   const { drivers } = useDrivers();
   const [copied, setCopied] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -313,13 +315,13 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.modalHeader}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.modalHeader, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
         <View>
-          <Text style={styles.modalTitle}>Shipment Detail</Text>
+          <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Shipment Detail</Text>
           <Text style={styles.modalSubtitle}>{shipment.tirNumber}</Text>
         </View>
-        <Pressable style={styles.closeBtn} onPress={onClose}>
+        <Pressable style={[styles.closeBtn, { backgroundColor: colors.surface }]} onPress={onClose}>
           <MaterialIcons name="close" size={20} color={Colors.textSecondary} />
         </Pressable>
       </View>
@@ -379,14 +381,14 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Route</Text>
-          <View style={styles.routeCard}>
+          <View style={[styles.routeCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.routeItem}>
               <View style={[styles.routeCircle, { borderColor: Colors.primary }]}>
                 <View style={[styles.routeInner, { backgroundColor: Colors.primary }]} />
               </View>
               <View>
-                <Text style={styles.routeLabel}>Origin</Text>
-                <Text style={styles.routeValue}>{shipment.origin}</Text>
+                <Text style={[styles.routeLabel, { color: colors.textMuted }]}>Origin</Text>
+                <Text style={[styles.routeValue, { color: colors.textPrimary }]}>{shipment.origin}</Text>
               </View>
             </View>
             <View style={[styles.routeConnector, { borderColor: Colors.border }]} />
@@ -395,8 +397,8 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
                 <View style={[styles.routeInner, { backgroundColor: Colors.success }]} />
               </View>
               <View>
-                <Text style={styles.routeLabel}>Destination</Text>
-                <Text style={styles.routeValue}>{shipment.destination}</Text>
+                <Text style={[styles.routeLabel, { color: colors.textMuted }]}>Destination</Text>
+                <Text style={[styles.routeValue, { color: colors.textPrimary }]}>{shipment.destination}</Text>
               </View>
             </View>
           </View>
@@ -404,7 +406,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Cargo Information</Text>
-          <View style={styles.infoCard}>
+          <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <InfoRow label="Description" value={shipment.cargoDescription} />
             <InfoRow label="Weight" value={shipment.weight} />
             <InfoRow label="Shipment No." value={shipment.tirNumber} mono />
@@ -552,7 +554,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
                 </View>
               </View>
             </View>
-            <View style={styles.fleetCard}>
+            <View style={[styles.fleetCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               {/* Primary driver */}
               <View style={[styles.fleetRow, styles.fleetRowPrimary]}>
                 <View style={styles.fleetAvatar}>
@@ -609,7 +611,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
               </Pressable>
             )}
           </View>
-          <View style={styles.infoCard}>
+          <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <InfoRow label="Name" value={localDriverName} />
             <InfoRow label="Plate Number" value={localPlate} mono />
 
@@ -691,7 +693,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Checkpoints</Text>
-          <View style={styles.infoCard}>
+          <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <CheckpointProgress checkpoints={shipment.checkpoints} />
           </View>
         </View>
@@ -1124,15 +1126,15 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
         onRequestClose={() => setShowContainerEditor(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => !savingContainers && setShowContainerEditor(false)}>
-          <Pressable style={[styles.pickerSheet, { maxHeight: '90%' }]} onPress={e => e.stopPropagation()}>
+          <Pressable style={[styles.pickerSheet, { maxHeight: '90%', backgroundColor: colors.surface, borderColor: colors.border }]} onPress={e => e.stopPropagation()}>
             {/* Header */}
-            <View style={styles.ceHeader}>
+            <View style={[styles.ceHeader, { borderBottomColor: colors.border }]}>
               <View style={styles.ceHeaderLeft}>
                 <View style={styles.ceHeaderIcon}>
                   <MaterialIcons name="inventory-2" size={14} color="#38BDF8" />
                 </View>
                 <View>
-                  <Text style={styles.ceHeaderTitle}>Edit Containers</Text>
+                  <Text style={[styles.ceHeaderTitle, { color: colors.textPrimary }]}>Edit Containers</Text>
                   <Text style={styles.ceHeaderSub}>{shipment.tirNumber} · {shipment.bolNumber ?? 'No B/L'}</Text>
                 </View>
               </View>
@@ -1264,9 +1266,9 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
             ) : null}
 
             {/* Footer actions */}
-            <View style={styles.ceFooter}>
+            <View style={[styles.ceFooter, { borderTopColor: colors.border }]}>
               <Pressable
-                style={({ pressed }) => [styles.ceCancelBtn, pressed && { opacity: 0.75 }]}
+                style={({ pressed }) => [styles.ceCancelBtn, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.75 }]}
                 onPress={() => setShowContainerEditor(false)}
                 disabled={savingContainers}
               >
@@ -1295,16 +1297,16 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
         onRequestClose={() => { setShowDriverPicker(false); setDriverSearch(''); }}
       >
         <Pressable style={styles.modalOverlay} onPress={() => { setShowDriverPicker(false); setDriverSearch(''); }}>
-          <Pressable style={[styles.pickerSheet, { maxHeight: '80%' }]} onPress={e => e.stopPropagation()}>
-            <View style={styles.pickerHeader}>
-              <Text style={styles.pickerTitle}>Assign Driver</Text>
+          <Pressable style={[styles.pickerSheet, { maxHeight: '80%', backgroundColor: colors.surface, borderColor: colors.border }]} onPress={e => e.stopPropagation()}>
+            <View style={[styles.pickerHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.pickerTitle, { color: colors.textPrimary }]}>Assign Driver</Text>
               <Text style={styles.pickerSubtitle}>{shipment.tirNumber}</Text>
             </View>
 
-            <View style={styles.driverSearchWrap}>
+            <View style={[styles.driverSearchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <MaterialIcons name="search" size={16} color={Colors.textMuted} />
               <TextInput
-                style={styles.driverSearchInput}
+                style={[styles.driverSearchInput, { color: colors.textPrimary }]}
                 value={driverSearch}
                 onChangeText={setDriverSearch}
                 placeholder="Search name or plate..."
@@ -1368,7 +1370,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
               )}
             </ScrollView>
 
-            <Pressable style={styles.pickerCancel} onPress={() => { setShowDriverPicker(false); setDriverSearch(''); }}>
+            <Pressable style={[styles.pickerCancel, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => { setShowDriverPicker(false); setDriverSearch(''); }}>
               <Text style={styles.pickerCancelText}>Cancel</Text>
             </Pressable>
           </Pressable>
@@ -1383,9 +1385,9 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
         onRequestClose={() => setShowStatusPicker(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setShowStatusPicker(false)}>
-          <Pressable style={styles.pickerSheet} onPress={e => e.stopPropagation()}>
-            <View style={styles.pickerHeader}>
-              <Text style={styles.pickerTitle}>Update Shipment Status</Text>
+          <Pressable style={[styles.pickerSheet, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={e => e.stopPropagation()}>
+            <View style={[styles.pickerHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.pickerTitle, { color: colors.textPrimary }]}>Update Shipment Status</Text>
               <Text style={styles.pickerSubtitle}>{shipment.tirNumber}</Text>
             </View>
             {STATUS_OPTIONS.map((opt, i) => (
@@ -1410,7 +1412,7 @@ export function ShipmentDetail({ shipment, onClose, onStatusChange, onDriverAssi
                 )}
               </Pressable>
             ))}
-            <Pressable style={styles.pickerCancel} onPress={() => setShowStatusPicker(false)}>
+            <Pressable style={[styles.pickerCancel, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={() => setShowStatusPicker(false)}>
               <Text style={styles.pickerCancelText}>Cancel</Text>
             </Pressable>
           </Pressable>

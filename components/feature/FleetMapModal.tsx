@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shipment } from '@/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 // Lazy-load LiveMap to avoid crashes in Expo Go
 let LiveMap: typeof import('@/components/feature/LiveMap').LiveMap | null = null;
@@ -211,6 +212,7 @@ interface FleetMapModalProps {
 export function FleetMapModal({
   visible, onClose, shipments, onShipmentPress, onRefresh,
 }: FleetMapModalProps) {
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState('active');
   const [focusShipment, setFocusShipment] = useState<Shipment | null>(null);
@@ -342,16 +344,16 @@ export function FleetMapModal({
       onRequestClose={onClose}
     >
       <StatusBar style="light" />
-      <View style={[styles.root, { paddingTop: insets.top }]}>
+      <View style={[styles.root, { paddingTop: insets.top, backgroundColor: colors.bg }]}>
 
         {/* ── Header ── */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           <View style={styles.headerLeft}>
             <View style={styles.brandIcon}>
               <MaterialIcons name="satellite-alt" size={15} color={Colors.primary} />
             </View>
             <View>
-              <Text style={styles.headerTitle}>Fleet Tracker</Text>
+              <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Fleet Tracker</Text>
               <View style={styles.liveRow}>
                 <View style={styles.liveDotWrap}>
                   <Animated.View style={[styles.livePulse, { transform: [{ scale: pulseAnim }] }]} />
@@ -378,7 +380,7 @@ export function FleetMapModal({
 
             {/* Refresh */}
             <Pressable
-              style={({ pressed }) => [styles.iconBtn, refreshing && styles.iconBtnSpin, pressed && { opacity: 0.7 }]}
+              style={({ pressed }) => [styles.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }, refreshing && styles.iconBtnSpin, pressed && { opacity: 0.7 }]}
               onPress={handleManualRefresh}
               hitSlop={8}
             >
@@ -391,7 +393,7 @@ export function FleetMapModal({
 
             {/* Close */}
             <Pressable
-              style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]}
+              style={({ pressed }) => [styles.closeBtn, { backgroundColor: colors.card, borderColor: colors.border }, pressed && { opacity: 0.7 }]}
               onPress={onClose}
               hitSlop={8}
             >
@@ -401,16 +403,16 @@ export function FleetMapModal({
         </View>
 
         {/* ── Refresh countdown bar ── */}
-        <View style={styles.refreshBar}>
+        <View style={[styles.refreshBar, { backgroundColor: colors.surface, borderBottomColor: colors.borderSubtle }]}>
           <RefreshCountdown interval={REFRESH_INTERVAL_S} lastRefresh={lastRefresh} />
-          <Text style={styles.filterCountTxt}>
+          <Text style={[styles.filterCountTxt, { color: colors.textMuted }]}>
             {gpsShipments.length} of {filteredShipments.length} with GPS ·{' '}
             {filteredShipments.length} shown
           </Text>
         </View>
 
         {/* ── Status filter chips ── */}
-        <View style={styles.filterBar}>
+        <View style={[styles.filterBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContent}>
             {FILTER_OPTIONS.map(opt => {
               const count = shipments.filter(s => matchesFilter(s, opt.key)).length;
@@ -420,12 +422,13 @@ export function FleetMapModal({
                   key={opt.key}
                   style={[
                     styles.filterChip,
+                    { backgroundColor: colors.card, borderColor: colors.border },
                     isActive && { backgroundColor: `${opt.color}22`, borderColor: opt.color },
                   ]}
                   onPress={() => setFilter(opt.key)}
                 >
                   {isActive && <View style={[styles.filterChipDot, { backgroundColor: opt.color }]} />}
-                  <Text style={[styles.filterChipTxt, isActive && { color: opt.color, fontWeight: '700' }]}>
+                  <Text style={[styles.filterChipTxt, { color: colors.textSecondary }, isActive && { color: opt.color, fontWeight: '700' }]}>
                     {opt.label}
                   </Text>
                   <View style={[styles.filterChipBadge, isActive && { backgroundColor: opt.color }]}>
@@ -448,11 +451,11 @@ export function FleetMapModal({
               onShipmentPress={handleViewDetail}
             />
           ) : (
-            <View style={styles.mapFallback}>
+            <View style={[styles.mapFallback, { backgroundColor: colors.card }]}>
               <View style={styles.mapFallbackIcon}>
                 <MaterialIcons name="map" size={28} color={Colors.textMuted} />
               </View>
-              <Text style={styles.mapFallbackTitle}>Map requires native build</Text>
+              <Text style={[styles.mapFallbackTitle, { color: colors.textMuted }]}>Map requires native build</Text>
               <Text style={styles.mapFallbackSub}>Download the APK to view live fleet positions.</Text>
             </View>
           )}
@@ -470,7 +473,7 @@ export function FleetMapModal({
         </View>
 
         {/* ── Shipment list panel ── */}
-        <View style={[styles.listPanel, { paddingBottom: insets.bottom + 8 }]}>
+        <View style={[styles.listPanel, { paddingBottom: insets.bottom + 8, backgroundColor: colors.surface, borderTopColor: colors.border }]}>
           {/* List panel header / toggle */}
           <Pressable
             style={styles.listHeader}
@@ -481,7 +484,7 @@ export function FleetMapModal({
             </View>
             <View style={styles.listHeaderCenter}>
               <MaterialIcons name="list" size={15} color={Colors.textSecondary} />
-              <Text style={styles.listHeaderTitle}>
+              <Text style={[styles.listHeaderTitle, { color: colors.textPrimary }]}>
                 {filteredShipments.length} shipment{filteredShipments.length !== 1 ? 's' : ''}
               </Text>
               {focusShipment ? (
