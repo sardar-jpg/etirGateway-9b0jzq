@@ -21,7 +21,6 @@ import { FleetMapModal } from '@/components/feature/FleetMapModal';
 import { SeaMapModal } from '@/components/feature/SeaMapModal';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 function useScreenWidth() {
   const [width, setWidth] = useState(() => Dimensions.get('window').width);
@@ -331,7 +330,6 @@ export default function DashboardScreen() {
               </View>
             )}
             <LanguagePicker compact />
-            <ThemeToggle size="sm" />
             <Pressable
               style={[styles.headerIconBtn, styles.headerIconBtnHighlight]}
               onPress={() => setControlPanelOpen(true)}

@@ -28,7 +28,6 @@ function getLazyShipmentDetail() {
 import { Shipment, ShipmentStatus } from '@/types';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 // ── Shimmer skeleton ──────────────────────────────────────────────────────────
 function SkeletonBox({ w, h, radius = 6, style }: { w?: number | string; h: number; radius?: number; style?: object }) {
@@ -354,7 +353,6 @@ export default function ShipmentsScreen() {
         </View>
         <View style={[styles.headerRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           {!isDesktop && <LanguagePicker compact />}
-          {!isDesktop && <ThemeToggle size="sm" />}
           {seaShipmentCount > 0 && (
             <Pressable
               style={({ pressed }) => [styles.seaMapBtn, pressed && { opacity: 0.85 }]}

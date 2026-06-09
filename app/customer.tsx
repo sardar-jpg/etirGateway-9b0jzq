@@ -15,7 +15,6 @@ import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow, SHIPMENT_TYPE_COLORS } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Shipment, ShipmentStatus, Client } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -1129,7 +1128,6 @@ export default function CustomerPortal() {
             <Text style={styles.topBarTitle}>{t('customer.portalTitle')}</Text>
           </View>
           <LanguagePicker compact />
-          <ThemeToggle size="sm" />
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -1437,7 +1435,6 @@ export default function CustomerPortal() {
           </View>
         </View>
         <View style={[styles.dashHeaderRight, isRtl && styles.rowReverse]}>
-          <ThemeToggle size="sm" />
           <LanguagePicker compact />
           <Pressable style={styles.refreshBtn} onPress={() => clientRecord && loadShipments(clientRecord.id)} hitSlop={8}>
             <MaterialIcons name="refresh" size={16} color={Colors.primary} />

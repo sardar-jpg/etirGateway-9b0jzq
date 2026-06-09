@@ -36,7 +36,6 @@ import {
 } from '@/services/documentService';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ChatMessage, Driver } from '@/types';
 
 type DriverTab = 'job' | 'chat' | 'notifications' | 'profile' | 'report';
@@ -620,7 +619,6 @@ export default function DriverCompanion() {
           </View>
         </View>
         <View style={styles.headerRight}>
-          <ThemeToggle size="sm" />
           <LanguagePicker compact />
         </View>
       </View>

@@ -9,7 +9,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { ControlPanel } from '@/components/feature/ControlPanel';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { FontSize, Spacing, BorderRadius } from '@/constants/theme';
 
 interface NavItem {
@@ -229,7 +228,6 @@ export function AdminSidebar() {
           <View style={{ flex: 1 }}>
             <LanguagePicker />
           </View>
-          <ThemeToggle size="md" />
         </View>
 
         {/* Divider */}

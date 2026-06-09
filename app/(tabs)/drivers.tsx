@@ -12,7 +12,6 @@ import { useRouter } from 'expo-router';
 import { Driver, TruckClass } from '@/types';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const TRUCK_ICONS: Record<TruckClass, keyof typeof MaterialIcons.glyphMap> = {
   'Refrigerated': 'ac-unit',
@@ -127,7 +126,6 @@ export default function DriversScreen() {
         </View>
         <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           {!isDesktop && <LanguagePicker compact />}
-          {!isDesktop && <ThemeToggle size="sm" />}
           <Pressable style={styles.addBtn} onPress={() => router.push('/') }>
             <MaterialIcons name="person-add" size={16} color="#fff" />
             <Text style={styles.addBtnText}>{t('drivers.inviteDriver')}</Text>

@@ -16,7 +16,6 @@ import { supabase } from '@/services/supabaseClient';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 // ── Client Form Modal ──────────────────────────────────────────────────────────
 interface ClientFormProps {

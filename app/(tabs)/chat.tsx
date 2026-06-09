@@ -15,7 +15,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { Colors, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/theme';
 import { useTheme } from '@/hooks/useTheme';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ChatMessage, ChatThread } from '@/types';
 
 function useScreenWidth() {
