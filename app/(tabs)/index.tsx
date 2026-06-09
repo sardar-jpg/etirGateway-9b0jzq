@@ -75,14 +75,15 @@ function StatCard({ label, value, icon, accentColor, subtitle, trend, trendLabel
       accessibilityRole="button"
     >
       <Animated.View style={[styles.statCard, { transform: [{ scale: scaleAnim }] }]}>
-        {/* Left accent bar */}
-        <View style={[styles.statAccentBar, { backgroundColor: accentColor }]} />
+        {/* Colored top border */}
+        <View style={[styles.statTopBorder, { backgroundColor: accentColor }]} />
 
         <View style={styles.statCardInner}>
-          {/* Top row: icon + trend */}
+          {/* Icon background with glow ring */}
           <View style={styles.statTopRow}>
-            <View style={[styles.statIconWrap, { backgroundColor: `${accentColor}18`, borderColor: `${accentColor}30` }]}>
-              <MaterialIcons name={icon} size={16} color={accentColor} />
+            <View style={[styles.statIconWrap, { backgroundColor: `${accentColor}15`, borderColor: `${accentColor}35` }]}>
+              <View style={[styles.statIconGlow, { backgroundColor: `${accentColor}12` }]} />
+              <MaterialIcons name={icon} size={18} color={accentColor} />
             </View>
             {trend && trend !== 'neutral' && (
               <View style={[styles.trendPill, { backgroundColor: `${trendColor}14`, borderColor: `${trendColor}30` }]}>
@@ -97,7 +98,7 @@ function StatCard({ label, value, icon, accentColor, subtitle, trend, trendLabel
 
           {/* Label + subtitle */}
           <Text style={styles.statLabel}>{label}</Text>
-          {subtitle ? <Text style={styles.statSubtitle}>{subtitle}</Text> : null}
+          {subtitle ? <Text style={[styles.statSubtitle, { color: `${accentColor}70` }]}>{subtitle}</Text> : null}
         </View>
       </Animated.View>
     </Pressable>
@@ -138,43 +139,64 @@ function FleetDistribution({ segments, total }: { segments: DistSeg[]; total: nu
   const active = segments.filter(s => s.count > 0);
   return (
     <View style={styles.fleetDist}>
-      {/* Bar */}
-      <View style={styles.distBar}>
-        {active.map((seg, i) => (
-          <View
-            key={seg.label}
-            style={[
-              styles.distBarSeg,
-              {
-                flex: seg.count,
-                backgroundColor: seg.color,
-                borderTopLeftRadius: i === 0 ? BorderRadius.sm : 0,
-                borderBottomLeftRadius: i === 0 ? BorderRadius.sm : 0,
-                borderTopRightRadius: i === active.length - 1 ? BorderRadius.sm : 0,
-                borderBottomRightRadius: i === active.length - 1 ? BorderRadius.sm : 0,
-              },
-            ]}
-          />
-        ))}
-        {total === 0 && <View style={[styles.distBarSeg, { flex: 1, backgroundColor: Colors.border, borderRadius: 4 }]} />}
+      {/* Stacked bar with glows */}
+      <View style={styles.distBarWrap}>
+        <View style={styles.distBar}>
+          {active.map((seg, i) => (
+            <View
+              key={seg.label}
+              style={[
+                styles.distBarSeg,
+                {
+                  flex: seg.count,
+                  backgroundColor: seg.color,
+                  borderTopLeftRadius: i === 0 ? 5 : 0,
+                  borderBottomLeftRadius: i === 0 ? 5 : 0,
+                  borderTopRightRadius: i === active.length - 1 ? 5 : 0,
+                  borderBottomRightRadius: i === active.length - 1 ? 5 : 0,
+                },
+              ]}
+            />
+          ))}
+          {total === 0 && <View style={[styles.distBarSeg, { flex: 1, backgroundColor: Colors.border, borderRadius: 5 }]} />}
+        </View>
+        {/* Percentage labels over bar */}
+        {active.length > 0 && total > 0 && (
+          <View style={styles.distBarPctRow}>
+            {active.map(seg => (
+              <View key={seg.label} style={{ flex: seg.count, alignItems: 'center' }}>
+                {Math.round((seg.count / total) * 100) >= 12 && (
+                  <Text style={styles.distBarPctText}>{Math.round((seg.count / total) * 100)}%</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
       </View>
 
-      {/* Legend grid */}
+      {/* Legend grid — richer tiles */}
       <View style={styles.distLegendGrid}>
-        {segments.map(seg => (
-          <View key={seg.label} style={styles.distLegendItem}>
-            <View style={[styles.distLegendIcon, { backgroundColor: `${seg.color}18`, borderColor: `${seg.color}30` }]}>
-              <MaterialIcons name={seg.icon} size={10} color={seg.color} />
+        {segments.map(seg => {
+          const pct = total > 0 ? Math.round((seg.count / total) * 100) : 0;
+          return (
+            <View key={seg.label} style={[styles.distLegendItem, { borderColor: seg.count > 0 ? `${seg.color}30` : Colors.border }]}>
+              {/* Left color accent */}
+              <View style={[styles.distLegendAccent, { backgroundColor: seg.color }]} />
+              <View style={[styles.distLegendIcon, { backgroundColor: `${seg.color}15`, borderColor: `${seg.color}28` }]}>
+                <MaterialIcons name={seg.icon} size={11} color={seg.color} />
+              </View>
+              <View style={styles.distLegendText}>
+                <Text style={[styles.distLegendCount, { color: seg.color }]}>{seg.count}</Text>
+                <Text style={styles.distLegendLabel}>{seg.label}</Text>
+              </View>
+              {total > 0 && (
+                <View style={[styles.distPctWrap, { backgroundColor: `${seg.color}12` }]}>
+                  <Text style={[styles.distLegendPct, { color: seg.color }]}>{pct}%</Text>
+                </View>
+              )}
             </View>
-            <View style={styles.distLegendText}>
-              <Text style={[styles.distLegendCount, { color: seg.color }]}>{seg.count}</Text>
-              <Text style={styles.distLegendLabel}>{seg.label}</Text>
-            </View>
-            {total > 0 && (
-              <Text style={styles.distLegendPct}>{Math.round((seg.count / total) * 100)}%</Text>
-            )}
-          </View>
-        ))}
+          );
+        })}
       </View>
     </View>
   );
@@ -312,6 +334,14 @@ export default function DashboardScreen() {
 
       {/* ── Mobile Header ── */}
       {!isDesktop && (
+        <View style={[styles.mobileHeaderWrap]}>
+          {/* Gradient accent bar */}
+          <View style={styles.headerGradientBar} pointerEvents="none">
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.primary, flex: 4 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.info, flex: 2 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.success, flex: 2 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.warning, flex: 1 }]} />
+          </View>
         <View style={[styles.mobileHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.mobileHeaderLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={styles.mobileLogoWrap}>
@@ -344,10 +374,18 @@ export default function DashboardScreen() {
             </Pressable>
           </View>
         </View>
+        </View>
       )}
 
       {/* ── Desktop Page Header ── */}
       {isDesktop && (
+        <View style={styles.desktopHeaderWrap}>
+          <View style={styles.headerGradientBar} pointerEvents="none">
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.primary, flex: 4 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.info, flex: 2 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.success, flex: 2 }]} />
+            <View style={[styles.headerGradientSeg, { backgroundColor: Colors.warning, flex: 1 }]} />
+          </View>
         <View style={[styles.desktopHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.desktopHeaderLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={styles.desktopHeaderIcon}>
@@ -375,6 +413,7 @@ export default function DashboardScreen() {
               <Text style={styles.desktopHeaderBtnText}>{t('nav.publicTracking')}</Text>
             </Pressable>
           </View>
+        </View>
         </View>
       )}
 
@@ -897,11 +936,16 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
 
   // ── Mobile Header ────────────────────────────────────────────────────────────
+  mobileHeaderWrap: {
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    overflow: 'hidden',
+  },
+  headerGradientBar: { flexDirection: 'row', height: 2.5, width: '100%' },
+  headerGradientSeg: { height: 2.5 },
   mobileHeader: {
     alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row',
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   mobileHeaderLeft: { alignItems: 'center', gap: Spacing.sm, flexDirection: 'row' },
   mobileLogoWrap: {
@@ -923,11 +967,14 @@ const styles = StyleSheet.create({
   },
 
   // ── Desktop Header ───────────────────────────────────────────────────────────
+  desktopHeaderWrap: {
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    overflow: 'hidden',
+  },
   desktopHeader: {
     alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row',
     paddingHorizontal: Spacing.xxxl, paddingVertical: Spacing.xl,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   desktopHeaderLeft: { alignItems: 'center', gap: Spacing.md, flexDirection: 'row' },
   desktopHeaderIcon: {
@@ -994,24 +1041,28 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.border,
     overflow: 'hidden',
     flex: 1, minWidth: 140,
-    flexDirection: 'row',
     ...Shadow.card,
   },
-  statAccentBar: { width: 3, alignSelf: 'stretch' },
-  statCardInner: { flex: 1, padding: Spacing.lg, gap: 5 },
-  statTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
+  statTopBorder: { height: 3, width: '100%' },
+  statCardInner: { flex: 1, padding: Spacing.lg, gap: 6 },
+  statTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   statIconWrap: {
-    width: 32, height: 32, borderRadius: BorderRadius.sm,
-    borderWidth: 1, alignItems: 'center', justifyContent: 'center',
+    width: 40, height: 40, borderRadius: BorderRadius.md,
+    borderWidth: 1.5, alignItems: 'center', justifyContent: 'center',
+    position: 'relative', overflow: 'hidden',
+  },
+  statIconGlow: {
+    position: 'absolute', width: 56, height: 56, borderRadius: 28,
+    top: -8, left: -8,
   },
   trendPill: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
     borderRadius: BorderRadius.full, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1,
   },
   trendPillText: { fontSize: 9, fontWeight: '700' },
-  statValue: { fontSize: FontSize.xxl, fontWeight: '800', letterSpacing: -0.5 },
-  statLabel: { fontSize: FontSize.xs, color: Colors.textSecondary, fontWeight: '500' },
-  statSubtitle: { fontSize: 10, color: Colors.textMuted },
+  statValue: { fontSize: FontSize.xxxl, fontWeight: '800', letterSpacing: -1 },
+  statLabel: { fontSize: FontSize.xs, color: Colors.textSecondary, fontWeight: '600', letterSpacing: 0.2 },
+  statSubtitle: { fontSize: 10, fontWeight: '600', letterSpacing: 0.3 },
 
   // ── Section Label ────────────────────────────────────────────────────────────
   sectionLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -1055,26 +1106,38 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.border, padding: Spacing.lg,
   },
   fleetDist: { gap: Spacing.lg },
-  distBar: { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', gap: 1 },
+  distBarWrap: { gap: 4 },
+  distBar: { flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', gap: 1.5 },
   distBarSeg: { height: '100%' },
+  distBarPctRow: {
+    flexDirection: 'row', height: 14,
+    paddingHorizontal: 2,
+  },
+  distBarPctText: { fontSize: 8, fontWeight: '800', color: Colors.textMuted, fontFamily: 'monospace' },
   distLegendGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, rowGap: Spacing.sm,
   },
   distLegendItem: {
     flexDirection: 'row', alignItems: 'center', gap: 7,
     backgroundColor: Colors.surface, borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
+    paddingRight: Spacing.md, paddingVertical: Spacing.sm,
     borderWidth: 1, borderColor: Colors.border, minWidth: 100,
-    flex: 1,
+    flex: 1, overflow: 'hidden',
   },
+  distLegendAccent: { width: 3, alignSelf: 'stretch', borderRadius: 1.5 },
   distLegendIcon: {
-    width: 24, height: 24, borderRadius: 6, borderWidth: 1,
-    alignItems: 'center', justifyContent: 'center',
+    width: 26, height: 26, borderRadius: 8, borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center', marginLeft: 4,
   },
   distLegendText: { flex: 1, gap: 1 },
   distLegendCount: { fontSize: FontSize.base, fontWeight: '800' },
   distLegendLabel: { fontSize: 9, color: Colors.textMuted, fontWeight: '600' },
-  distLegendPct: { fontSize: 9, color: Colors.textMuted, fontFamily: 'monospace', fontWeight: '600' },
+  distPctWrap: {
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: 5, paddingVertical: 2,
+    minWidth: 30, alignItems: 'center',
+  },
+  distLegendPct: { fontSize: 9, fontWeight: '800', fontFamily: 'monospace' },
 
   // ── Recent Shipment Row ──────────────────────────────────────────────────────
   recentRow: {
